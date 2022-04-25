@@ -103,10 +103,10 @@ class ControlNode:
 
     def control_callback(self,arr):
         #position controller
-        global enc_l
-        global x
-        global t_pre
-        global ref_pos
+        # global enc_l
+        # global x
+        # global t_pre
+        # global ref_pos
 
 
         ref_pos = arr.data[7]
@@ -117,15 +117,13 @@ class ControlNode:
         enc_l = arr.data[5]
         dt = t - t_pre
         t_pre = t
-        x = np.pi*diameter*enc_l/3200
-
-
+        x = np.pi*diameter*enc_l/3200   # Distance is calculated based on the rotation of the left wheel
 
         self.pid_pos.sample_time = dt
         self.pid_pos.setpoint = ref_pos
         self.pos_pid_value = self.pid_pos(x)
 
-        #velocity controller
+        ###### velocity controller #####
         global lin_velocity
         lin_velocity = arr.data[4]
 
@@ -133,11 +131,7 @@ class ControlNode:
         self.pid_vel.setpoint = self.pos_pid_value
         self.vel_pid_value = self.pid_vel(lin_velocity)
 
-
-
-
-        #angle_controller
-        global theta
+        #### angle_controller ####
         theta = arr.data[1]
 
         self.pid_ang.sample_time = dt
@@ -150,21 +144,20 @@ class ControlNode:
         else:
             out = self.ang_pid_value - 5
 
-        if out >= 480:
-            self.speed_wo_enc = 480
-        else:
-            if out <= -480:
-                self.speed_wo_enc = -480
-            else:
-                self.speed_wo_enc = out
+        # if out >= 480:
+        #     self.speed_wo_enc = 480
+        # else:
+        #     if out <= -480:
+        #         self.speed_wo_enc = -480
+        #     else:
+        #         self.speed_wo_enc = out
 
         # print('ang_pid_value:',ang_pid_value)
         #print('speed_wo_enc:',self.speed_wo_enc)
         #print('dt_theta:',dt)
         #print("theta:",theta)
 
-        #encoder synchronisation
-        global enc_r
+        ####### encoder synchronisation  #####
         enc_r = arr.data[6]
 
         # encoder synchronization controller
@@ -174,13 +167,14 @@ class ControlNode:
 
         self.speed_l = self.speed_wo_enc
         self.speed_r = self.speed_wo_enc + self.enc_pid_value
-        if self.speed_r >= 480:
-            self.speed_r = 480
-        else:
-            if self.speed_r <= -480:
-                self.speed_r = -480
-            else:
-                self.speed_r = self.speed_r
+
+        # if self.speed_r >= 480:
+        #     self.speed_r = 480
+        # else:
+        #     if self.speed_r <= -480:
+        #         self.speed_r = -480
+        #     else:
+        #         self.speed_r = self.speed_r
 
         try:
             motors.motor1.setSpeed(self.speed_r)
@@ -194,14 +188,14 @@ class ControlNode:
                 print("Driver %s fault!" % e.driver_num)
 
 
-        speed_data = Float64MultiArray()
+        # speed_data = Float64MultiArray()
 
-        speed_data.data = [self.speed_l, self.speed_r]
+        # speed_data.data = [self.speed_l, self.speed_r]
 
-        self.vel_publisher.publish(speed_data)
-        self.pos_publisher.publish(x)
-        self.ref_angle_publisher.publish(self.vel_pid_value)
-        self.ref_vel_publisher.publish(self.pos_pid_value)
+        # self.vel_publisher.publish(speed_data)
+        # self.pos_publisher.publish(x)
+        # self.ref_angle_publisher.publish(self.vel_pid_value)
+        # self.ref_vel_publisher.publish(self.pos_pid_value)
 
 
 
@@ -241,7 +235,7 @@ class ControlNode:
         #     u_list.append(u)
 
     def subscribe(self):
-
+        #Everytime a new package of data is available, call the control_callback method
         rospy.Subscriber('/sensor_pub', Float64MultiArray, self.control_callback)
 
 
