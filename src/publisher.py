@@ -116,6 +116,6 @@ if __name__ == "__main__":
                             float(encoder_1),float(encoder_2),ref_pos,lin_acc,ang_vel]
                     sub.sensor_publisher.publish(data_to_send)
                 except:
-                    pass
+                    raise Exception("Not possible to send data")
         else:
             pass
