@@ -85,7 +85,7 @@ class Motors(object):
         _pi.stop()
         _pi = pigpio.pi()
         self.setSpeeds(0, 0)
-        
+
 class DriverFault(Exception):
     def __init__(self, driver_num):
         self.driver_num = driver_num
@@ -95,5 +95,17 @@ def raiseIfFault():
         raise DriverFault(1)
     if motors.motor2.getFault():
         raise DriverFault(2)
+
+def reset_motors():
+    print('Resetting Motors')
+    try:
+        motors.motor1.setSpeed(0)
+        raiseIfFault()
+        motors.motor2.setSpeed(0)
+        raiseIfFault()
+        # motors.forceStop()
+    except DriverFault as e:
+        print("Driver %s fault!" % e.driver_num)
+
 
 motors = Motors()

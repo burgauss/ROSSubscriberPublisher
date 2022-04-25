@@ -1,0 +1,1 @@
+""" Exporter class is resposable to create a csv file in order to visualize the data"""
