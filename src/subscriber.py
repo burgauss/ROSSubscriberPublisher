@@ -4,7 +4,7 @@ import rospy
 import serial
 import numpy as np
 from std_msgs.msg import Float64, Int64, Float64MultiArray
-from dual_g2_hpmd_rpi import motors, MAX_SPEED, DriverFault, raiseIfFault
+from dual_g2_hpmd_rpi import motors, MAX_SPEED, DriverFault, raiseIfFault, reset_motors
 import sys
 from simple_pid import PID
 import time
@@ -59,32 +59,30 @@ collect_data = True
 flag = True
 ang_vel_pre = 0
 lin_vel_pre = 0
-# global test_speed
-# test_speed = 0
 
-global dt_lst,ang_vel_lst,ang_vel_cal_lst, position_lst, enc_l_lst, enc_r_lst, imu1_lst, imu2_lst,lin_acc_cal_lst, lin_acc_lst,ang_acc_lst
-global lin_vel_lst,x1_list,voltage_l_lst, u_list, voltage_r_lst, ref_pos_lst, ref_vel_lst, rpm_l_lst, rpm_r_lst
-ang_vel_lst = []
-position_lst =[]
-enc_l_lst = []
-enc_r_lst = []
-imu1_lst =[]
-imu2_lst =[]
-lin_acc_lst = []
-lin_vel_lst = []
-ref_angle_lst = []
-voltage_l_lst = []
-voltage_r_lst = []
-ref_pos_lst = []
-ref_vel_lst = []
-rpm_l_lst = []
-rpm_r_lst = []
-ang_acc_lst = []
-lin_acc_cal_lst = []
-ang_vel_cal_lst = []
-dt_lst = []
-u_list = []
-x1_list = []
+# global dt_lst,ang_vel_lst,ang_vel_cal_lst, position_lst, enc_l_lst, enc_r_lst, imu1_lst, imu2_lst,lin_acc_cal_lst, lin_acc_lst,ang_acc_lst
+# global lin_vel_lst,x1_list,voltage_l_lst, u_list, voltage_r_lst, ref_pos_lst, ref_vel_lst, rpm_l_lst, rpm_r_lst
+# ang_vel_lst = []
+# position_lst =[]
+# enc_l_lst = []
+# enc_r_lst = []
+# imu1_lst =[]
+# imu2_lst =[]
+# lin_acc_lst = []
+# lin_vel_lst = []
+# ref_angle_lst = []
+# voltage_l_lst = []
+# voltage_r_lst = []
+# ref_pos_lst = []
+# ref_vel_lst = []
+# rpm_l_lst = []
+# rpm_r_lst = []
+# ang_acc_lst = []
+# lin_acc_cal_lst = []
+# ang_vel_cal_lst = []
+# dt_lst = []
+# u_list = []
+# x1_list = []
 
 
 
@@ -184,14 +182,6 @@ class ControlNode:
             else:
                 self.speed_r = self.speed_r
 
-        # global A,B,C,L,K,x0,x1,y,u
-        #
-        # y[0] = x
-        # y[1] = theta
-        # x1 = (Ar*x0) + (B*u) + (L*y)
-        # u = (-K*x1)
-        # x0 = x1
-
         try:
             motors.motor1.setSpeed(self.speed_r)
             # motors.motor1.setSpeed(100)
@@ -215,55 +205,45 @@ class ControlNode:
 
 
 
-        if collect_data:
-            global flag
-            if flag:
-                ang_acc = (ang_vel - 0)/dt
-                lin_acc_cal = (lin_velocity*diameter/2 - 0)/dt
-                ang_vel_cal = (enc_l - 0)*2*3.14/(dt*3200)
-                flag = False
-            else:
-                ang_acc = (ang_vel - ang_vel_lst[-1])/dt
-                lin_acc_cal = (lin_velocity*diameter/2 - lin_vel_lst[-1])/dt
-                ang_vel_cal = ((enc_l - enc_l_lst[-1])*2*3.14/3200)/dt
-            # lin_vel_pre = lin_velocity*diameter/2
-            # ang_vel_pre = ang_vel
-            dt_lst.append(dt)
-            ang_vel_lst.append(ang_vel*4)
-            ang_vel_cal_lst.append(ang_vel_cal)
-            position_lst.append(x)
-            enc_l_lst.append(enc_l)
-            enc_r_lst.append(enc_r)
-            imu1_lst.append(arr.data[0])
-            imu2_lst.append(theta)
-            lin_acc_lst.append(lin_acc)
-            lin_vel_lst.append(lin_velocity)
-            voltage_l_lst.append(self.speed_l*12/480)
-            voltage_r_lst.append(self.speed_r*12/480)
-            # voltage_r_lst.append(test_speed)
-            ref_pos_lst.append(ref_pos)
-            ref_vel_lst.append(self.pos_pid_value)
-            ref_angle_lst.append(self.vel_pid_value)
-            rpm_l_lst.append(arr.data[2])
-            rpm_r_lst.append(arr.data[3])
-            ang_acc_lst.append(ang_acc)
-            lin_acc_cal_lst.append(lin_acc_cal)
-            u_list.append(u)
+        # if collect_data:
+        #     global flag
+        #     if flag:
+        #         ang_acc = (ang_vel - 0)/dt
+        #         lin_acc_cal = (lin_velocity*diameter/2 - 0)/dt
+        #         ang_vel_cal = (enc_l - 0)*2*3.14/(dt*3200)
+        #         flag = False
+        #     else:
+        #         ang_acc = (ang_vel - ang_vel_lst[-1])/dt
+        #         lin_acc_cal = (lin_velocity*diameter/2 - lin_vel_lst[-1])/dt
+        #         ang_vel_cal = ((enc_l - enc_l_lst[-1])*2*3.14/3200)/dt
+        #     # lin_vel_pre = lin_velocity*diameter/2
+        #     # ang_vel_pre = ang_vel
+        #     dt_lst.append(dt)
+        #     ang_vel_lst.append(ang_vel*4)
+        #     ang_vel_cal_lst.append(ang_vel_cal)
+        #     position_lst.append(x)
+        #     enc_l_lst.append(enc_l)
+        #     enc_r_lst.append(enc_r)
+        #     imu1_lst.append(arr.data[0])
+        #     imu2_lst.append(theta)
+        #     lin_acc_lst.append(lin_acc)
+        #     lin_vel_lst.append(lin_velocity)
+        #     voltage_l_lst.append(self.speed_l*12/480)
+        #     voltage_r_lst.append(self.speed_r*12/480)
+        #     # voltage_r_lst.append(test_speed)
+        #     ref_pos_lst.append(ref_pos)
+        #     ref_vel_lst.append(self.pos_pid_value)
+        #     ref_angle_lst.append(self.vel_pid_value)
+        #     rpm_l_lst.append(arr.data[2])
+        #     rpm_r_lst.append(arr.data[3])
+        #     ang_acc_lst.append(ang_acc)
+        #     lin_acc_cal_lst.append(lin_acc_cal)
+        #     u_list.append(u)
 
     def subscribe(self):
 
-        rospy.Subscriber('/sensor_pub',Float64MultiArray,self.control_callback)
+        rospy.Subscriber('/sensor_pub', Float64MultiArray, self.control_callback)
 
-def reset_motors():
-    print('Resetting Motors')
-    try:
-        motors.motor1.setSpeed(0)
-        raiseIfFault()
-        motors.motor2.setSpeed(0)
-        raiseIfFault()
-        # motors.forceStop()
-    except DriverFault as e:
-        print("Driver %s fault!" % e.driver_num)
 
 
 if __name__ == "__main__":
@@ -271,7 +251,7 @@ if __name__ == "__main__":
     sub = ControlNode()
     print('Publishing....')
     while not rospy.is_shutdown():
-        sub.subscribe()
+        sub.subscribe() #Let the class subscribe to the sensor_pub node
         sub.r.sleep()
         # print('Test Speed:',test_speed)
         # rospy.loginfo(test_speed)
