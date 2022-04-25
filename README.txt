@@ -6,6 +6,9 @@ the subscriber.py and the publisher.py
 The files are to be found inside the src\Nodes\...
 
 Important Comments (From New to Old)
+*the dual_g2_hpmd_rpi.py will contain all of the functions and classes that are set in the subscriber, we make this class
+responsable to have all the methods that the motors need
+
 *Some files were moved out of the correct structure (from SRC/Nodes to directly SRC/), 
 this is to avoid problems with git, however when downloading and updating to the arduino
 we need to copy ONLY SUBSCRIBERY.py AND PUBLISHER.PY

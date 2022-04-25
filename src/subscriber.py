@@ -4,7 +4,7 @@ import rospy
 import serial
 import numpy as np
 from std_msgs.msg import Float64, Int64, Float64MultiArray
-from dual_g2_hpmd_rpi import motors, MAX_SPEED
+from dual_g2_hpmd_rpi import motors, MAX_SPEED, DriverFault, raiseIfFault
 import sys
 from simple_pid import PID
 import time
@@ -30,39 +30,34 @@ K_ipos = rospy.get_param("/position_controller/Ki")
 K_dpos = rospy.get_param("/position_controller/Kd")
 
 
-global A,B,C,L,K,x0,x1,y,u,Ar
-A = np.matrix([[1,0.0064,0,0],
-               [0,0.9241,0.0140,0.0001],
-               [0,0.003,1.0010,0.0067],
-               [0,0.0757,0.2989,1.0018]])
+# global A,B,C,L,K,x0,x1,y,u,Ar
+# A = np.matrix([[1,0.0064,0,0],
+#                [0,0.9241,0.0140,0.0001],
+#                [0,0.003,1.0010,0.0067],
+#                [0,0.0757,0.2989,1.0018]])
 
-B = np.matrix([[0],[0.0122],[0],[-0.0122]])
-C = np.matrix([[1,0,0.0887,0],
-               [0,0,1,0]])
-L = np.matrix([[1.8861,-0.16],
-              [127.7957,-10.292],
-              [0.0836,1.9584],
-              [17.6839,143.6917]])
+# B = np.matrix([[0],[0.0122],[0],[-0.0122]])
+# C = np.matrix([[1,0,0.0887,0],
+#                [0,0,1,0]])
+# L = np.matrix([[1.8861,-0.16],
+#               [127.7957,-10.292],
+#               [0.0836,1.9584],
+#               [17.6839,143.6917]])
 
-K = np.matrix([-174.1171,-89.7025,-893.4302,-121.7834])
+# K = np.matrix([-174.1171,-89.7025,-893.4302,-121.7834])
 
-x0=np.zeros((4,1))
-x1 = np.zeros((4,1))
-y = np.zeros((2,1))
-u = np.zeros((1,1))
-Ar = (A-L*C)
+# x0=np.zeros((4,1))
+# x1 = np.zeros((4,1))
+# y = np.zeros((2,1))
+# u = np.zeros((1,1))
+# Ar = (A-L*C)
 
-
+# Parameter
 diameter = 0.116
-# ref_pos = 0
 t_pre = 0
-
-global collect_data, flag
 collect_data = True
 flag = True
-global ang_vel_pre
 ang_vel_pre = 0
-global lin_vel_pre
 lin_vel_pre = 0
 # global test_speed
 # test_speed = 0
@@ -91,15 +86,7 @@ dt_lst = []
 u_list = []
 x1_list = []
 
-class DriverFault(Exception):
-    def __init__(self, driver_num):
-        self.driver_num = driver_num
 
-def raiseIfFault():
-    if motors.motor1.getFault():
-        raise DriverFault(1)
-    if motors.motor2.getFault():
-        raise DriverFault(2)
 
 class ControlNode:
     def __init__(self):

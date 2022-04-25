@@ -24,7 +24,7 @@ print('Serial Reset.....')
 
 flag = True #flag to reset encoder count
 final_pos = rospy.get_param("/pos/final_pos") #final position
-ts=0 #starting time
+ts = 0 #starting time
 
 #definition of Sensor Node Object
 # class SensorNode:
