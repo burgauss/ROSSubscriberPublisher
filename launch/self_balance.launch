@@ -1,0 +1,7 @@
+<launch>
+    <rosparam command="load" file="$(find controller)/config/params.yaml"/>
+    <node pkg="controller" type="subscriber.py" name="controller"></node>
+    <arg name="node_start_delay" default="5.0" />
+    <node pkg="controller" type="publisher.py" name="sensor"></node>
+
+</launch>

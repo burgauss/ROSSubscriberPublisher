@@ -1,0 +1,5 @@
+<launch>
+  <node pkg="controller" type="publisher.py" name="sensor"></node>
+<!--  <node pkg="controller" type="subscriber.py" name="controller"></node>-->
+  <!-- <node pkg="controller" type="motor_control.py" name="actuator"></node> -->
+</launch>
