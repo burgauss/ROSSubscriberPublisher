@@ -257,13 +257,13 @@ if __name__ == "__main__":
         #         test_speed = 480
         #     i = 0
 
-    if collect_data:
-        df = pd.DataFrame(list(zip(lin_acc_cal_lst,ang_acc_lst,ang_vel_lst,position_lst,enc_l_lst,enc_r_lst,imu1_lst,imu2_lst,
-                                   lin_acc_lst,lin_vel_lst,voltage_l_lst,voltage_r_lst,ref_pos_lst,
-                                   ref_vel_lst,ref_angle_lst,rpm_l_lst,rpm_r_lst,ang_vel_cal_lst,dt_lst,u_list)),
-                          columns =['lin_acc_cal','ang_acc','ang_vel','position','enc_l','enc_r','imu1','imu2','lin_acc',
-                                    'lin_vel','voltage_l','voltage_r','ref_pos','ref_vel','ref_angle',
-                                    'rpm_l','rpm_r','ang_vel_cal','dt','u'])
-        df.to_csv('/home/pi/Data/weight_plate_low.csv', index=False)
+    # if collect_data:
+    #     df = pd.DataFrame(list(zip(lin_acc_cal_lst,ang_acc_lst,ang_vel_lst,position_lst,enc_l_lst,enc_r_lst,imu1_lst,imu2_lst,
+    #                                lin_acc_lst,lin_vel_lst,voltage_l_lst,voltage_r_lst,ref_pos_lst,
+    #                                ref_vel_lst,ref_angle_lst,rpm_l_lst,rpm_r_lst,ang_vel_cal_lst,dt_lst,u_list)),
+    #                       columns =['lin_acc_cal','ang_acc','ang_vel','position','enc_l','enc_r','imu1','imu2','lin_acc',
+    #                                 'lin_vel','voltage_l','voltage_r','ref_pos','ref_vel','ref_angle',
+    #                                 'rpm_l','rpm_r','ang_vel_cal','dt','u'])
+    #     df.to_csv('/home/pi/Data/weight_plate_low.csv', index=False)
 
     rospy.on_shutdown(reset_motors())
