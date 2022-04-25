@@ -219,7 +219,7 @@ class ControlNode:
 
         speed_data = Float64MultiArray()
 
-        speed_data.data = [self.speed_l,self.speed_r]
+        speed_data.data = [self.speed_l, self.speed_r]
 
         self.vel_publisher.publish(speed_data)
         self.pos_publisher.publish(x)
