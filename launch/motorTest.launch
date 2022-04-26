@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="controller" type="moveMotors.py" name="Motors"></node>
+</launch>
