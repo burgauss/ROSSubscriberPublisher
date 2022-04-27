@@ -34,7 +34,7 @@ if __name__ == "__main__":
             motors.motor1.setSpeed(200)
             # motors.motor1.setSpeed(100)
             raiseIfFault()
-            motors.motor2.setSpeed(200)
+            motors.motor2.setSpeed(-200)
             # motors.motor2.setSpeed(0)
             raiseIfFault()
 
