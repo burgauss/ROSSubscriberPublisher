@@ -10,6 +10,7 @@ from simple_pid import PID
 import time
 import csv
 import pandas as pd
+from datetime import datetime
 
 rate = 1
 #PID parameters for tilt control
@@ -43,9 +44,7 @@ L = np.matrix([[1.8861,-0.16],
               [127.7957,-10.292],
               [0.0836,1.9584],
               [17.6839,143.6917]])
-
 K = np.matrix([-174.1171,-89.7025,-893.4302,-121.7834])
-
 x0=np.zeros((4,1))
 x1 = np.zeros((4,1))
 y = np.zeros((2,1))
@@ -282,6 +281,8 @@ def reset_motors():
 if __name__ == "__main__":
     i = 0
     sub = ControlNode()
+    now = datetime.now()
+    nowWithFormat = now.strftime("%m%d%y%H%M")
     print('Publishing....')
     while not rospy.is_shutdown():
         sub.subscribe()
@@ -303,6 +304,6 @@ if __name__ == "__main__":
                           columns =['lin_acc_cal','ang_acc','ang_vel','position','enc_l','enc_r','imu1','imu2','lin_acc',
                                     'lin_vel','voltage_l','voltage_r','ref_pos','ref_vel','ref_angle',
                                     'rpm_l','rpm_r','ang_vel_cal','dt','u'])
-        df.to_csv('/home/pi/Data/weight_plate_low.csv', index=False)
+        df.to_csv('/home/pi/Data/weight_plate_low_'+nowWithFormat+'.csv', index=False)
 
     rospy.on_shutdown(reset_motors())
