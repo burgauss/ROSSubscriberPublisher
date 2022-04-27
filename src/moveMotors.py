@@ -25,7 +25,10 @@ def reset_motors():
     except DriverFault as e:
         print("Driver %s fault!" % e.driver_num)
 
+
 if __name__ == "__main__":
+    rospy.init_node('motors', anonymous=True)
+    print("Connected")
     while not rospy.is_shutdown():
         try:
             motors.motor1.setSpeed(200)
@@ -36,6 +39,8 @@ if __name__ == "__main__":
             raiseIfFault()
 
         except DriverFault as e:
-                print("Driver %s fault!" % e.driver_num)
+            print("Driver %s fault!" % e.driver_num)
+            reset_motors()
     
+    reset_motors()
     rospy.on_shutdown(reset_motors())
