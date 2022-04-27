@@ -42,5 +42,4 @@ if __name__ == "__main__":
             print("Driver %s fault!" % e.driver_num)
             reset_motors()
     
-    reset_motors()
     rospy.on_shutdown(reset_motors())
