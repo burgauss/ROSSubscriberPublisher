@@ -2,7 +2,7 @@
 tilt_controller/Kp: 40
 tilt_controller/Ki: 10
 tilt_controller/Kd: 0.08
-encoder_synch_controller/Kp: 0.10
+encoder_synch_controller/Kp: 10
 encoder_synch_controller/Ki: 0
 encoder_synch_controller/Kd: 0
 velocity_controller/Kp: 0.4
