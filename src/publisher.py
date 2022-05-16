@@ -21,7 +21,6 @@ while i<5:
         i=i+1
 
 ser.reset_input_buffer()
-print('Serial Reset.....')
 
 flag = True #flag to reset encoder count
 final_pos = rospy.get_param("/pos/final_pos") #final position
