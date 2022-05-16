@@ -9,7 +9,7 @@ import time
 
 #object for  reading serial data
 ser = serial.Serial('/dev/ttyACM0', 115200)
-ser.flushInput()
+ser.reset_input_buffer()
 print("Connected...")
 
 #Resetting serial communication
