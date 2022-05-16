@@ -10,16 +10,17 @@ import time
 #object for  reading serial data
 ser = serial.Serial('/dev/ttyACM0', 115200)
 ser.reset_input_buffer()
-print("Connected...")
 
 #Resetting serial communication
 i=0
 while i<5:
-    if ser.inWaiting()>0:
+    #Get the number of bytes in the input buffer
+    if ser.in_waiting()>0:
         ser.write(str(1).encode('utf-8'))
-        ser.flushInput()
+        ser.reset_input_buffer()
         i=i+1
-ser.flushInput()
+
+ser.reset_input_buffer()
 print('Serial Reset.....')
 
 flag = True #flag to reset encoder count
