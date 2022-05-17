@@ -69,7 +69,7 @@ class SensorNode_:
                     self.ts = time.time() 
                     self.flag=False
                 tp = time.time() - self.ts
-                self.ref_pos = self.posFunction(tp)
+                self.posFunction(tp)        #update the self.ref_pos
                 
                 return 1
             else:
@@ -77,12 +77,10 @@ class SensorNode_:
 
     def posFunction(self, tp):
         if tp <= 5:
-            ref_pos = 0
-        elif ref_pos < self.final_pos:
-            ref_pos = (tp - 5)*3.2*0.059
+            self.ref_pos = 0
+        elif self.ref_pos < self.final_pos:
+            self.ref_pos = (tp - 5)*3.2*0.059
         
-        return ref_pos
-
 
     def publish2Subscriber(self):
         self.data_to_send.data = [self.mpu_1, self.mpu_2, self.left_rpm, self.right_rpm,
