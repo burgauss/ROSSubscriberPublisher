@@ -47,7 +47,7 @@ class SensorNode_:
 
 
     def getFromArduino(self):
-        if ser.in_waiting()>0:
+        if ser.inWaiting()>0:
             read_serial = str(ser.readline()) #receive data as string
             b = read_serial.split(',')
             if b[0] == "<":
