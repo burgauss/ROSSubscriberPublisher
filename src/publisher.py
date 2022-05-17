@@ -23,9 +23,9 @@ while i<5:
 ser.reset_input_buffer()
 #################################################
 
-flag = True #flag to reset encoder count
-final_pos = rospy.get_param("/pos/final_pos") #final position
-ts=0 #starting time
+# flag = True #flag to reset encoder count
+# final_pos = rospy.get_param("/pos/final_pos") #final position
+# ts=0 #starting time
 
 class SensorNode_:
     def __init__(self):
@@ -44,6 +44,10 @@ class SensorNode_:
         self.lin_acc = 0.0
         self.ang_vel = 0.0
 
+        self.flag = True #flag to reset encoder count
+        self.final_pos = rospy.get_param("/pos/final_pos") #final position
+        self.ts=0 #starting time
+
 
 
     def getFromArduino(self):
@@ -61,11 +65,10 @@ class SensorNode_:
                 self.trans_vel = float(b[5])
                 self.lin_acc = float(b[8])
                 self.ang_vel = float(b[9])
-                global flag
-                if flag ==True:
-                    ts = time.time() 
-                    flag=False
-                tp = time.time() - ts
+                if self.flag ==True:
+                    self.ts = time.time() 
+                    self.flag=False
+                tp = time.time() - self.ts
                 self.ref_pos = self.posFunction(tp)
                 
                 return 1
@@ -75,7 +78,7 @@ class SensorNode_:
     def posFunction(self, tp):
         if tp <= 5:
             ref_pos = 0
-        elif ref_pos < final_pos:
+        elif ref_pos < self.final_pos:
             ref_pos = (tp - 5)*3.2*0.059
         
         return ref_pos
