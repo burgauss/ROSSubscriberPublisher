@@ -15,7 +15,7 @@ ser.reset_input_buffer()
 i=0
 while i<5:
     #Get the number of bytes in the input buffer
-    if ser.in_waiting() > 0:
+    if ser.inWaiting() > 0:
         ser.write(str(1).encode('utf-8'))
         ser.reset_input_buffer()
         #print("ready")
