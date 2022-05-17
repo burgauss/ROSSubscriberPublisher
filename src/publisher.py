@@ -61,6 +61,7 @@ class SensorNode_:
                 self.trans_vel = float(b[5])
                 self.lin_acc = float(b[8])
                 self.ang_vel = float(b[9])
+                global flag
                 if flag ==True:
                     ts = time.time() 
                     flag=False
