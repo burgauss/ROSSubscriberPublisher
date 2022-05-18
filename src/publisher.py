@@ -93,7 +93,6 @@ class SensorNode_:
 
 if __name__ == "__main__":
     sensor = SensorNode_()
-    
     try:
         while not rospy.is_shutdown():
             val = sensor.getFromArduino()
