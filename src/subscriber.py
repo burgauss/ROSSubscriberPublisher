@@ -307,4 +307,5 @@ if __name__ == "__main__":
                                     'rpm_l','rpm_r','ang_vel_cal','dt','u'])
         df.to_csv('/home/pi/Data/weight_plate_low_'+nowWithFormat+'.csv', index=False)
 
-    rospy.on_shutdown(reset_motors())
+    #rospy.on_shutdown(reset_motors())
+    reset_motors()
