@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from ast import Pass
 import rospy
 import serial
 import numpy as np
@@ -44,16 +45,29 @@ def raiseIfFault():
 
 class ControlNode:
     def __init__(self):
-        pass
-    
-    def control_callback():
+        rospy.init_node('controller', anonymous=True)
+        self.wheelDiameter = 0.116
+        self.t_pre = 0
+
         
+    
+    def control_callback(self):
+        pass
+
+    
+    def subscribe(self):
+        'Subscribe to the sensor_pub'
+        rospy.Subscriber('/sensor_pub',Float64MultiArray, self.control_callback)
+
+
 
     
 
 
 if __name__ == '__main__':
-    pass
+    controlListener = ControlNode()
+    while not rospy.is_shutdown():
+        pass
 
 
 ##########################################################
