@@ -32,6 +32,26 @@ K_ipos = rospy.get_param("/position_controller/Ki")
 K_dpos = rospy.get_param("/position_controller/Kd")
 ############################################
 
+class DriverFault(Exception):
+    def __init__(self, driver_num):
+        self.driver_num = driver_num
+
+def raiseIfFault():
+    if motors.motor1.getFault():
+        raise DriverFault(1)
+    if motors.motor2.getFault():
+        raise DriverFault(2)
+
+class ControlNode:
+    def __init__(self):
+        pass
+    
+    def control_callback():
+        
+
+    
+
+
 if __name__ == '__main__':
     pass
 
@@ -39,25 +59,25 @@ if __name__ == '__main__':
 ##########################################################
 #############################Old Code#####################
 ##########################################################
-global A,B,C,L,K,x0,x1,y,u,Ar
-A = np.matrix([[1,0.0064,0,0],
-               [0,0.9241,0.0140,0.0001],
-               [0,0.003,1.0010,0.0067],
-               [0,0.0757,0.2989,1.0018]])
+# global A,B,C,L,K,x0,x1,y,u,Ar
+# A = np.matrix([[1,0.0064,0,0],
+#                [0,0.9241,0.0140,0.0001],
+#                [0,0.003,1.0010,0.0067],
+#                [0,0.0757,0.2989,1.0018]])
 
-B = np.matrix([[0],[0.0122],[0],[-0.0122]])
-C = np.matrix([[1,0,0.0887,0],
-               [0,0,1,0]])
-L = np.matrix([[1.8861,-0.16],
-              [127.7957,-10.292],
-              [0.0836,1.9584],
-              [17.6839,143.6917]])
-K = np.matrix([-174.1171,-89.7025,-893.4302,-121.7834])
-x0=np.zeros((4,1))
-x1 = np.zeros((4,1))
-y = np.zeros((2,1))
-u = np.zeros((1,1))
-Ar = (A-L*C)
+# B = np.matrix([[0],[0.0122],[0],[-0.0122]])
+# C = np.matrix([[1,0,0.0887,0],
+#                [0,0,1,0]])
+# L = np.matrix([[1.8861,-0.16],
+#               [127.7957,-10.292],
+#               [0.0836,1.9584],
+#               [17.6839,143.6917]])
+# K = np.matrix([-174.1171,-89.7025,-893.4302,-121.7834])
+# x0=np.zeros((4,1))
+# x1 = np.zeros((4,1))
+# y = np.zeros((2,1))
+# u = np.zeros((1,1))
+# Ar = (A-L*C)
 
 
 diameter = 0.116
@@ -98,15 +118,15 @@ dt_lst = []
 u_list = []
 x1_list = []
 
-class DriverFault(Exception):
-    def __init__(self, driver_num):
-        self.driver_num = driver_num
+# class DriverFault(Exception):
+#     def __init__(self, driver_num):
+#         self.driver_num = driver_num
 
-def raiseIfFault():
-    if motors.motor1.getFault():
-        raise DriverFault(1)
-    if motors.motor2.getFault():
-        raise DriverFault(2)
+# def raiseIfFault():
+#     if motors.motor1.getFault():
+#         raise DriverFault(1)
+#     if motors.motor2.getFault():
+#         raise DriverFault(2)
 
 class ControlNode:
     def __init__(self):
@@ -274,16 +294,16 @@ class ControlNode:
 
         rospy.Subscriber('/sensor_pub',Float64MultiArray,self.control_callback)
 
-def reset_motors():
-    print('Resetting Motors')
-    try:
-        motors.motor1.setSpeed(0)
-        raiseIfFault()
-        motors.motor2.setSpeed(0)
-        raiseIfFault()
-        # motors.forceStop()
-    except DriverFault as e:
-        print("Driver %s fault!" % e.driver_num)
+# def reset_motors():
+#     print('Resetting Motors')
+#     try:
+#         motors.motor1.setSpeed(0)
+#         raiseIfFault()
+#         motors.motor2.setSpeed(0)
+#         raiseIfFault()
+#         # motors.forceStop()
+#     except DriverFault as e:
+#         print("Driver %s fault!" % e.driver_num)
 
 
 if __name__ == "__main__":
@@ -315,4 +335,4 @@ if __name__ == "__main__":
         df.to_csv('/home/pi/Data/weight_plate_low_'+nowWithFormat+'.csv', index=False)
 
     #rospy.on_shutdown(reset_motors())
-    reset_motors()
+    motors.forceStop()
