@@ -12,7 +12,7 @@ import csv
 import pandas as pd
 from datetime import datetime
 
-
+##########Getting parameters#############
 rate = 1
 #PID parameters for tilt control
 Kp = rospy.get_param("/tilt_controller/Kp")
@@ -30,8 +30,15 @@ K_dvel  = rospy.get_param("/velocity_controller/Kd")
 K_ppos = rospy.get_param("/position_controller/Kp")
 K_ipos = rospy.get_param("/position_controller/Ki")
 K_dpos = rospy.get_param("/position_controller/Kd")
+############################################
+
+if __name__ == '__main__':
+    pass
 
 
+##########################################################
+#############################Old Code#####################
+##########################################################
 global A,B,C,L,K,x0,x1,y,u,Ar
 A = np.matrix([[1,0.0064,0,0],
                [0,0.9241,0.0140,0.0001],
