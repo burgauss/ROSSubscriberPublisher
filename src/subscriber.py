@@ -149,7 +149,7 @@ if __name__ == '__main__':
 # u = np.zeros((1,1))
 # Ar = (A-L*C)
 
-
+"""
 diameter = 0.116
 # ref_pos = 0
 t_pre = 0
@@ -406,3 +406,5 @@ if __name__ == "__main__":
 
     #rospy.on_shutdown(reset_motors())
     motors.forceStop()
+
+"""
