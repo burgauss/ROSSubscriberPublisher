@@ -91,6 +91,8 @@ class ControlNode:
         theta = arr.data[1]
         lin_velocity = arr.data[4]
         enc_r = arr.data[6]
+        rpm_l = arr.data[2]
+        rpm_r = arr.data[3]
 
         t = time.time()
         dt = t - self.t_pre
@@ -147,14 +149,14 @@ class ControlNode:
 
         """
         self.exportData(ref_pos, enc_l, enc_r, lin_velocity, theta, 
-                        ang_vel, lin_acc, x, dt)
+                        ang_vel, lin_acc, x, rpm_l, rpm_r, dt)
 
     def subscribe(self):
         'Subscribe to the sensor_pub'
         rospy.Subscriber('/sensor_pub',Float64MultiArray, self.control_callback)
 
     def exportData(self, ref_pos_, enc_l_, enc_r_, lin_velocity_, theta_, 
-                    ang_vel_, lin_acc_,x_, dt_):
+                    ang_vel_, lin_acc_,x_, rpm_l_, rpm_r_, dt_):
             
             if self.flag2AdjustParams:
                 ang_acc = (ang_vel_ - 0)/dt
@@ -182,8 +184,8 @@ class ControlNode:
             self.ref_pos_lst.append(ref_pos_)
             self.ref_vel_lst.append(self.pos_pid_value)
             self.ref_angle_lst.append(self.vel_pid_value)
-            # self.rpm_l_lst.append(arr.data[2])
-            # self.rpm_r_lst.append(arr.data[3])
+            self.rpm_l_lst.append(rpm_l_)
+            self.rpm_r_lst.append(rpm_r_)
             self.ang_acc_lst.append(ang_acc)
             self.lin_acc_cal_lst.append(lin_acc_cal)
             # self.u_list.append(u)
