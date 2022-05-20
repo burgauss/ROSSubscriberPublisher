@@ -44,6 +44,17 @@ def raiseIfFault():
         raise DriverFault(1)
     if motors.motor2.getFault():
         raise DriverFault(2)
+
+def reset_motors():
+    print('Resetting Motors')
+    try:
+        motors.motor1.setSpeed(0)
+        raiseIfFault()
+        motors.motor2.setSpeed(0)
+        raiseIfFault()
+        # motors.forceStop()
+    except DriverFault as e:
+        print("Driver %s fault!" % e.driver_num)
 ###############################################
 
 class ControlNode:
@@ -63,7 +74,7 @@ class ControlNode:
         self.enc_l_lst = []
         self.enc_r_lst = []
         self.imu1_lst =[]
-        self.imu2_lst =[]
+        self.thetaImu2_lst = []
         self.lin_acc_lst = []
         self.lin_vel_lst = []
         self.ref_angle_lst = []
@@ -122,7 +133,7 @@ class ControlNode:
 
         # Write to Motors
         self.speed_l = self.ang_pid_value
-        self.speed_r = self.enc_pid_value + self.speed_l
+        self.speed_r = -(self.enc_pid_value + self.speed_l)
 
         try:
             motors.motor1.setSpeed(self.speed_r)
@@ -159,7 +170,7 @@ class ControlNode:
                     ang_vel_, lin_acc_,x_, rpm_l_, rpm_r_, dt_):
             
             if self.flag2AdjustParams:
-                ang_acc = (ang_vel_ - 0)/dt
+                ang_acc = (ang_vel_ - 0)/dt_
                 lin_acc_cal = (lin_velocity_*self.wheelDiameter/2 - 0)/dt_
                 ang_vel_cal = (enc_l_ - 0)*2*3.14/(dt_*3200)
                 self.flag2AdjustParamsflag = False
@@ -189,18 +200,27 @@ class ControlNode:
             self.ang_acc_lst.append(ang_acc)
             self.lin_acc_cal_lst.append(lin_acc_cal)
             # self.u_list.append(u)
+    
+
 
 
     
 
 
 if __name__ == '__main__':
+    print("Subscribe Node Main loop activated")
     controlListener = ControlNode()
+    now = datetime.now()
+    nowWithFormat = now.strftime("%m%d%y%H%M")
     while not rospy.is_shutdown():
         controlListener.subscribe()
 
-    print(controlListener.ref_pos_lst)
-    rospy.on_shutdown(motors.forceStop())
+    # df = pd.DataFrame(list(zip(controlListener.dt_lst)), 
+    #                 columns = ["variable_1"])
+    # df.to_csv('/home/pi/Data/weight_plate_low_'+nowWithFormat+'.csv', index=False)
+
+    motors.forceStop()
+    rospy.on_shutdown(motors.forceStop)
 
 ##########################################################
 #############################Old Code#####################
