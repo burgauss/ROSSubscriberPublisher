@@ -221,9 +221,11 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
         controlListener.subscribe()
 
-    # df = pd.DataFrame(list(zip(controlListener.dt_lst)), 
-    #                 columns = ["variable_1"])
-    # df.to_csv('/home/pi/Data/weight_plate_low_'+nowWithFormat+'.csv', index=False)
+    """comment out the following lines if no exporting is needed"""
+    df = pd.DataFrame(list(zip(controlListener.dt_lst, controlListener.position_lst, controlListener.lin_vel_lst, 
+                        controlListener.thetaImu2_lst,)), 
+                    columns = ["time_step", "position", "linear_velocity", "thetaImu"])
+    df.to_csv('/home/pi/Data/weight_plate_low_'+nowWithFormat+'.csv', index=False)
 
     motors.forceStop()
     rospy.on_shutdown(motors.forceStop)
