@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from ast import Pass
+from this import d
 import rospy
 import serial
 import numpy as np
@@ -31,8 +32,9 @@ K_dvel  = rospy.get_param("/velocity_controller/Kd")
 K_ppos = rospy.get_param("/position_controller/Kp")
 K_ipos = rospy.get_param("/position_controller/Ki")
 K_dpos = rospy.get_param("/position_controller/Kd")
-############################################
 
+############################################
+#########Motor related#####################
 class DriverFault(Exception):
     def __init__(self, driver_num):
         self.driver_num = driver_num
@@ -42,17 +44,50 @@ def raiseIfFault():
         raise DriverFault(1)
     if motors.motor2.getFault():
         raise DriverFault(2)
+###############################################
 
 class ControlNode:
     def __init__(self):
         rospy.init_node('controller', anonymous=True)
         self.wheelDiameter = 0.116
         self.t_pre = 0
-
+        self.pid_ang = PID(Kp,Ki,Kd,setpoint = 0)
+        self.pid_vel = PID(K_pvel,K_ivel,K_dvel,setpoint = 0)
+        self.pid_enc = PID(Kpe,Kie,Kde,setpoint = 0)
+        self.pid_pos = PID(K_ppos,K_ipos,K_dpos,setpoint = 0)
+        self.pid_pos.output_limits = (-10,10)
         
     
-    def control_callback(self):
-        pass
+    def control_callback(self, arr):
+        'The observer is called each time the subscriber receives new information'
+        enc_l = arr.data[5]
+        ref_pos = arr.data[7]
+        lin_acc = arr.data[8]
+        ang_vel = arr.data[9]
+
+        t = time.time()
+        dt = t - t_pre
+        t_pre = t
+        x = np.pi*diameter*enc_l/3200
+
+        self.pid_pos.sampple_time = dt
+        self.pid_pos.setpoint = ref_pos
+        self.pos_pid_value = self.pid_pos(x)
+    
+        # Velocity controller
+        lin_velocity = arr.data[4]
+        self.pid_vel.sample_time = dt
+        self.pid_vel.setpoint = self.pos_pid_value
+        self.vel_pid_value = self.pid_vel(lin_velocity)
+
+        # Angle controller
+        theta = arr.data[1]
+
+        self.pid_ang.sample_time = dt
+        self.pid_ang.setpoint = self.vel_pid_value
+        self.ang_pid_value = self.pid_ang(theta)
+        
+        
 
     
     def subscribe(self):
@@ -67,7 +102,7 @@ class ControlNode:
 if __name__ == '__main__':
     controlListener = ControlNode()
     while not rospy.is_shutdown():
-        pass
+        controlListener.subscribe()
 
 
 ##########################################################
