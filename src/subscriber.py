@@ -70,9 +70,9 @@ class ControlNode:
         enc_r = arr.data[6]
 
         t = time.time()
-        dt = t - t_pre
-        t_pre = t
-        x = np.pi*diameter*enc_l/3200
+        dt = t - self.t_pre
+        self.t_pre = t
+        x = np.pi*self.wheelDiameter*enc_l/3200
 
         self.pid_pos.sampple_time = dt
         self.pid_pos.setpoint = ref_pos
@@ -86,7 +86,7 @@ class ControlNode:
         # Angle controller
 
         self.pid_ang.sample_time = dt
-        self.pid_ang.setpoint = self.vel_pid_value
+        self.pid_ang.setpoint = -self.vel_pid_value
         self.ang_pid_value = self.pid_ang(theta)
 
         # Encoder sync
