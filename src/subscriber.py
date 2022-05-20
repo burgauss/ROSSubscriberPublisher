@@ -56,7 +56,8 @@ class ControlNode:
         self.pid_enc = PID(Kpe,Kie,Kde,setpoint = 0)
         self.pid_pos = PID(K_ppos,K_ipos,K_dpos,setpoint = 0)
         self.pid_pos.output_limits = (-10,10)
-        
+        self.speed_l = 0
+        self.speed_r = 0
     
     def control_callback(self, arr):
         'The observer is called each time the subscriber receives new information'
@@ -64,6 +65,9 @@ class ControlNode:
         ref_pos = arr.data[7]
         lin_acc = arr.data[8]
         ang_vel = arr.data[9]
+        theta = arr.data[1]
+        lin_velocity = arr.data[4]
+        enc_r = arr.data[6]
 
         t = time.time()
         dt = t - t_pre
@@ -75,20 +79,36 @@ class ControlNode:
         self.pos_pid_value = self.pid_pos(x)
     
         # Velocity controller
-        lin_velocity = arr.data[4]
         self.pid_vel.sample_time = dt
         self.pid_vel.setpoint = self.pos_pid_value
         self.vel_pid_value = self.pid_vel(lin_velocity)
 
         # Angle controller
-        theta = arr.data[1]
 
         self.pid_ang.sample_time = dt
         self.pid_ang.setpoint = self.vel_pid_value
         self.ang_pid_value = self.pid_ang(theta)
-        
-        
 
+        # Encoder sync
+
+        self.pid_enc.sample_time = dt
+        self.pid_enc.setpoint = enc_l
+        self.enc_pid_value = self.pid_enc(enc_r)
+
+        # Write to Motors
+        self.speed_l = self.ang_pid_value
+        self.speed_r = self.enc_pid_value + self.speed_l
+
+        try:
+            motors.motor1.setSpeed(self.speed_r)
+            raiseIfFault()
+            motors.motor2.setSpeed(self.speed_l)
+            raiseIfFault()
+
+        except:
+            print("Driver %s fault!" % e.driver_num)
+        finally:
+            motors.forceStop()
     
     def subscribe(self):
         'Subscribe to the sensor_pub'
@@ -104,6 +124,7 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
         controlListener.subscribe()
 
+    rospy.on_shutdown(motors.forceStop())
 
 ##########################################################
 #############################Old Code#####################
