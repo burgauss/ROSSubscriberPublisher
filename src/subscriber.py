@@ -133,45 +133,60 @@ class ControlNode:
         finally:
             motors.forceStop()
 
-        self.exportData()
+        """We export the sensoric data of the PID:
+            ref_pos: reference position of the robot
+            enc_l: value of the encoder in the left wheel
+            enc_r: value of the encoder in the right wheel
+            lin_velocity: taked from the imu, taked from both the motors calculate din the arduino
+            theta: value of the angle, taked from the imu
+            ang_vel: angular velocity of the robot
+            lin_acc: linear acceleration of the robot
+            x: the real position
+            dt: the time step
+            Moreover the data of the PID's is taked due to they are already defined in self
+
+        """
+        self.exportData(ref_pos, enc_l, enc_r, lin_velocity, theta, 
+                        ang_vel, lin_acc, x, dt)
 
     def subscribe(self):
         'Subscribe to the sensor_pub'
         rospy.Subscriber('/sensor_pub',Float64MultiArray, self.control_callback)
 
-    def exportData(self):
+    def exportData(self, ref_pos_, enc_l_, enc_r_, lin_velocity_, theta_, 
+                    ang_vel_, lin_acc_,x_, dt_):
             
             if self.flag2AdjustParams:
-                ang_acc = (ang_vel - 0)/dt
-                lin_acc_cal = (lin_velocity*diameter/2 - 0)/dt
-                ang_vel_cal = (enc_l - 0)*2*3.14/(dt*3200)
+                ang_acc = (ang_vel_ - 0)/dt
+                lin_acc_cal = (lin_velocity_*self.wheelDiameter/2 - 0)/dt_
+                ang_vel_cal = (enc_l_ - 0)*2*3.14/(dt_*3200)
                 self.flag2AdjustParamsflag = False
             else:
-                ang_acc = (ang_vel - ang_vel_lst[-1])/dt
-                lin_acc_cal = (lin_velocity*diameter/2 - lin_vel_lst[-1])/dt
-                ang_vel_cal = ((enc_l - enc_l_lst[-1])*2*3.14/3200)/dt
+                ang_acc = (ang_vel_ - self.ang_vel_lst[-1])/dt_
+                lin_acc_cal = (lin_velocity_*self.wheelDiameter/2 - self.lin_vel_lst[-1])/dt_
+                ang_vel_cal = ((enc_l_ - self.enc_l_lst[-1])*2*3.14/3200)/dt_
             
-            self.dt_lst.append(dt)
-            self.ang_vel_lst.append(ang_vel*4)
+            self.dt_lst.append(dt_)
+            self.ang_vel_lst.append(ang_vel_*4)
             self.ang_vel_cal_lst.append(ang_vel_cal)
-            self.position_lst.append(x)
-            self.enc_l_lst.append(enc_l)
-            self.enc_r_lst.append(enc_r)
-            self.imu1_lst.append(arr.data[0])
-            self.imu2_lst.append(theta)
-            self.lin_acc_lst.append(lin_acc)
-            self.lin_vel_lst.append(lin_velocity)
+            self.position_lst.append(x_)
+            self.enc_l_lst.append(enc_l_)
+            self.enc_r_lst.append(enc_r_)
+            # self.imu1_lst.append(arr.data[0]) #the imu 1 is irrelevant
+            self.thetaImu2_lst.append(theta_)
+            self.lin_acc_lst.append(lin_acc_)
+            self.lin_vel_lst.append(lin_velocity_)
             self.voltage_l_lst.append(self.speed_l*12/480)
             self.voltage_r_lst.append(self.speed_r*12/480)
             # voltage_r_lst.append(test_speed)
-            self.ref_pos_lst.append(ref_pos)
+            self.ref_pos_lst.append(ref_pos_)
             self.ref_vel_lst.append(self.pos_pid_value)
             self.ref_angle_lst.append(self.vel_pid_value)
-            self.rpm_l_lst.append(arr.data[2])
-            self.rpm_r_lst.append(arr.data[3])
+            # self.rpm_l_lst.append(arr.data[2])
+            # self.rpm_r_lst.append(arr.data[3])
             self.ang_acc_lst.append(ang_acc)
             self.lin_acc_cal_lst.append(lin_acc_cal)
-            self.u_list.append(u)
+            # self.u_list.append(u)
 
 
     
@@ -182,6 +197,7 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
         controlListener.subscribe()
 
+    print(controlListener.ref_pos_lst)
     rospy.on_shutdown(motors.forceStop())
 
 ##########################################################
