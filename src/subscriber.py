@@ -126,11 +126,13 @@ class ControlNode:
         self.pid_ang.setpoint = -self.vel_pid_value
         self.ang_pid_value = self.pid_ang(theta)
 
-        # addition of 5 for compensating motor inertia at start
-        # if self.ang_pid_value > 0:
-        #     out = self.ang_pid_value + 5
-        # else:
-        #     out = self.ang_pid_value - 5
+        ## addition of 5 for compensating motor inertia at start
+        if self.ang_pid_value > 0:
+            out = self.ang_pid_value + 5
+        else:
+            out = self.ang_pid_value - 5
+
+
 
         # Encoder sync
 
@@ -139,8 +141,8 @@ class ControlNode:
         self.enc_pid_value = self.pid_enc(enc_r)
 
         # Write to Motors
-        self.speed_l = self.ang_pid_value
-        self.speed_r = self.ang_pid_value + self.speed_l
+        self.speed_l = out
+        self.speed_r = out + self.speed_l
 
         try:
             motors.motor1.setSpeed(self.speed_r)
