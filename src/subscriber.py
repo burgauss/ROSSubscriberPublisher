@@ -80,10 +80,12 @@ class Exporter:
         self.u_list = []
         self.x1_list = []
 
+        self.flag2AdjustParamsflag = True
+
     def update(self, ref_pos_, enc_l_, enc_r_, lin_velocity_, theta_, 
                     ang_vel_, lin_acc_,x_, rpm_l_, rpm_r_, dt_):
         
-        if self.flag2AdjustParams:
+        if self.flag2AdjustParamsflag:
             ang_acc = (ang_vel_ - 0)/dt_
             lin_acc_cal = (lin_velocity_*self.wheelDiameter/2 - 0)/dt_
             ang_vel_cal = (enc_l_ - 0)*2*3.14/(dt_*3200)
@@ -118,11 +120,12 @@ class Exporter:
     def exportData(self):
         now = datetime.now()
         nowWithFormat = now.strftime("%m%d%y%H%M")
-        
+
         df = pd.DataFrame(list(zip(self.dt_lst, self.position_lst, self.lin_vel_lst, 
                         self.thetaImu2_lst)), 
                         columns = ["time_step", "position", "linear_velocity", "thetaImu"])
         df.to_csv('/home/pi/Data/weight_plate_low_'+nowWithFormat+'.csv', index=False)
+
 
 ##############################################
 class ControlNode:
@@ -140,7 +143,7 @@ class ControlNode:
         self.exporter = Exporter
 
 
-        self.flag2AdjustParams = True
+        # self.flag2AdjustParams = True
     
     def control_callback(self, arr):
         'The observer is called each time the subscriber receives new information'
@@ -276,10 +279,7 @@ if __name__ == '__main__':
         controlListener.subscribe()
 
     """comment out the following lines if no exporting is needed"""
-    df = pd.DataFrame(list(zip(controlListener.dt_lst, controlListener.position_lst, controlListener.lin_vel_lst, 
-                        controlListener.thetaImu2_lst)), 
-                    columns = ["time_step", "position", "linear_velocity", "thetaImu"])
-    df.to_csv('/home/pi/Data/weight_plate_low_'+nowWithFormat+'.csv', index=False)
+
 
     motors.forceStop()
     rospy.on_shutdown(motors.forceStop)
