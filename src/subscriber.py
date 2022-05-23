@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from ast import Pass
+from lib2to3.pgen2.driver import Driver
 from this import d
 import rospy
 import serial
@@ -202,7 +203,7 @@ class ControlNode:
             motors.motor2.setSpeed(self.speed_l)
             raiseIfFault()
 
-        except:
+        except DriverFault as e:
             print("Driver %s fault!" % e.driver_num)
         finally:
             motors.forceStop()
@@ -273,16 +274,15 @@ class ControlNode:
 if __name__ == '__main__':
     print("Subscribe Node Main loop activated")
     controlListener = ControlNode()
-    now = datetime.now()
-    nowWithFormat = now.strftime("%m%d%y%H%M")
+
     while not rospy.is_shutdown():
         controlListener.subscribe()
 
-    """comment out the following lines if no exporting is needed"""
-
+    
+    controlListener.exporter.exportData()
 
     motors.forceStop()
-    rospy.on_shutdown(motors.forceStop)
+    rospy.on_shutdown(controlListener.exporter.exportData())
 
 ##########################################################
 #############################Old Code#####################
