@@ -95,21 +95,22 @@ class ControlNode:
     
     def control_callback(self, arr):
         'The observer is called each time the subscriber receives new information'
+        theta = arr.data[1]
+        rpm_l = arr.data[2]
+        rpm_r = arr.data[3]
+        lin_velocity = arr.data[4]
         enc_l = arr.data[5]
+        enc_r = arr.data[6]
         ref_pos = arr.data[7]
         lin_acc = arr.data[8]
         ang_vel = arr.data[9]
-        theta = arr.data[1]
-        lin_velocity = arr.data[4]
-        enc_r = arr.data[6]
-        rpm_l = arr.data[2]
-        rpm_r = arr.data[3]
 
         t = time.time()
         dt = t - self.t_pre
         self.t_pre = t
         x = np.pi*self.wheelDiameter*enc_l/3200
 
+        #Position control
         self.pid_pos.sampple_time = dt
         self.pid_pos.setpoint = ref_pos
         self.pos_pid_value = self.pid_pos(x)
@@ -139,7 +140,7 @@ class ControlNode:
 
         # Write to Motors
         self.speed_l = self.ang_pid_value
-        self.speed_r = -(self.ang_pid_value + self.speed_l)
+        self.speed_r = self.ang_pid_value + self.speed_l
 
         try:
             motors.motor1.setSpeed(self.speed_r)
@@ -223,7 +224,7 @@ if __name__ == '__main__':
 
     """comment out the following lines if no exporting is needed"""
     df = pd.DataFrame(list(zip(controlListener.dt_lst, controlListener.position_lst, controlListener.lin_vel_lst, 
-                        controlListener.thetaImu2_lst,)), 
+                        controlListener.thetaImu2_lst)), 
                     columns = ["time_step", "position", "linear_velocity", "thetaImu"])
     df.to_csv('/home/pi/Data/weight_plate_low_'+nowWithFormat+'.csv', index=False)
 
