@@ -57,6 +57,8 @@ def reset_motors():
         print("Driver %s fault!" % e.driver_num)
 ###############################################
 
+
+##############################################
 class ControlNode:
     def __init__(self):
         rospy.init_node('controller', anonymous=True)
@@ -145,8 +147,8 @@ class ControlNode:
         self.speed_r = out + self.speed_l
 
         try:
-            motors.motor1.setSpeed(self.speed_r)
-            raiseIfFault()
+            #motors.motor1.setSpeed(self.speed_r)
+            #raiseIfFault()
             motors.motor2.setSpeed(self.speed_l)
             raiseIfFault()
 
