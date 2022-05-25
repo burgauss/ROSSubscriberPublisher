@@ -31,26 +31,6 @@ K_ipos = rospy.get_param("/position_controller/Ki")
 K_dpos = rospy.get_param("/position_controller/Kd")
 
 
-global A,B,C,L,K,x0,x1,y,u,Ar
-A = np.matrix([[1,0.0064,0,0],
-               [0,0.9241,0.0140,0.0001],
-               [0,0.003,1.0010,0.0067],
-               [0,0.0757,0.2989,1.0018]])
-
-B = np.matrix([[0],[0.0122],[0],[-0.0122]])
-C = np.matrix([[1,0,0.0887,0],
-               [0,0,1,0]])
-L = np.matrix([[1.8861,-0.16],
-              [127.7957,-10.292],
-              [0.0836,1.9584],
-              [17.6839,143.6917]])
-K = np.matrix([-174.1171,-89.7025,-893.4302,-121.7834])
-x0=np.zeros((4,1))
-x1 = np.zeros((4,1))
-y = np.zeros((2,1))
-u = np.zeros((1,1))
-Ar = (A-L*C)
-
 
 diameter = 0.116
 # ref_pos = 0
@@ -195,14 +175,6 @@ class ControlNode:
                 self.speed_r = -480
             else:
                 self.speed_r = self.speed_r
-
-        # global A,B,C,L,K,x0,x1,y,u
-        #
-        # y[0] = x
-        # y[1] = theta
-        # x1 = (Ar*x0) + (B*u) + (L*y)
-        # u = (-K*x1)
-        # x0 = x1
 
         try:
             motors.motor1.setSpeed(self.speed_r)
