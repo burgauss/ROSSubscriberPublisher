@@ -92,16 +92,14 @@ class ControlNode:
         self.pid_pos = PID(K_ppos,K_ipos,K_dpos,setpoint = 0)
         self.pid_pos.output_limits = (-10,10)
 
-    def control_callback(self,arr):
-        #position controller
-        global enc_l
-        global x
-        global ref_pos
-
-
+    def control_callback(self, arr):
+        
+        # Data adquisition from the subscriber comming in the variable arr
         ref_pos = arr.data[7]
         lin_acc = arr.data[8]
         ang_vel = arr.data[9]
+        
+        #position controller
 
         t = time.time()
         enc_l = arr.data[5]
