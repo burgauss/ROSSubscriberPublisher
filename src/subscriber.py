@@ -96,7 +96,6 @@ class ControlNode:
         #position controller
         global enc_l
         global x
-        global t_pre
         global ref_pos
 
 
@@ -106,9 +105,9 @@ class ControlNode:
 
         t = time.time()
         enc_l = arr.data[5]
-        dt = t - t_pre
-        t_pre = t
-        x = np.pi*diameter*enc_l/3200
+        dt = t - self.t_pre
+        self.t_pre = t
+        x = np.pi*self.diameter*enc_l/3200
 
 
 
@@ -202,12 +201,12 @@ class ControlNode:
             global flag
             if flag:
                 ang_acc = (ang_vel - 0)/dt
-                lin_acc_cal = (lin_velocity*diameter/2 - 0)/dt
+                lin_acc_cal = (lin_velocity*self.diameter/2 - 0)/dt
                 ang_vel_cal = (enc_l - 0)*2*3.14/(dt*3200)
                 flag = False
             else:
                 ang_acc = (ang_vel - ang_vel_lst[-1])/dt
-                lin_acc_cal = (lin_velocity*diameter/2 - lin_vel_lst[-1])/dt
+                lin_acc_cal = (lin_velocity*self.diameter/2 - lin_vel_lst[-1])/dt
                 ang_vel_cal = ((enc_l - enc_l_lst[-1])*2*3.14/3200)/dt
             # lin_vel_pre = lin_velocity*diameter/2
             # ang_vel_pre = ang_vel
