@@ -32,7 +32,7 @@ K_ipos = rospy.get_param("/position_controller/Ki")
 K_dpos = rospy.get_param("/position_controller/Kd")
 
 
-collect_data = True
+collect_data = False
 flag = True
 ang_vel_pre = 0
 lin_vel_pre = 0
@@ -84,6 +84,8 @@ class Exporter:
 # dt_lst = []
 # u_list = []
 # x1_list = []
+##########################################
+##########Motor Functions#################
 
 class DriverFault(Exception):
     def __init__(self, driver_num):
@@ -94,6 +96,19 @@ def raiseIfFault():
         raise DriverFault(1)
     if motors.motor2.getFault():
         raise DriverFault(2)
+
+def reset_motors():
+    print('Resetting Motors')
+    try:
+        motors.motor1.setSpeed(0)
+        raiseIfFault()
+        motors.motor2.setSpeed(0)
+        raiseIfFault()
+        # motors.forceStop()
+    except DriverFault as e:
+        print("Driver %s fault!" % e.driver_num)
+##################################################
+#################################################
 
 class ControlNode:
     def __init__(self):
@@ -118,6 +133,13 @@ class ControlNode:
     def control_callback(self, arr):
         
         # Data adquisition from the subscriber comming in the variable arr
+        imu1 = arr.data[0]
+        theta = arr.data[1]
+        rpm_l = arr.data[2]
+        rpm_r = arr.dara[3]
+        lin_velocity = arr.data[4]
+        enc_l = arr.data[5]
+        enc_r = arr.data[6]
         ref_pos = arr.data[7]
         lin_acc = arr.data[8]
         ang_vel = arr.data[9]
@@ -125,7 +147,6 @@ class ControlNode:
         #position controller
 
         t = time.time()
-        enc_l = arr.data[5]
         dt = t - self.t_pre
         self.t_pre = t
         x = np.pi*self.diameter*enc_l/3200
@@ -137,8 +158,6 @@ class ControlNode:
         self.pos_pid_value = self.pid_pos(x)
 
         #velocity controller
-        global lin_velocity
-        lin_velocity = arr.data[4]
 
         self.pid_vel.sample_time = dt
         self.pid_vel.setpoint = self.pos_pid_value
@@ -148,8 +167,6 @@ class ControlNode:
 
 
         #angle_controller
-        global theta
-        theta = arr.data[1]
 
         self.pid_ang.sample_time = dt
         self.pid_ang.setpoint = -self.vel_pid_value
@@ -169,14 +186,8 @@ class ControlNode:
             else:
                 self.speed_wo_enc = out
 
-        # print('ang_pid_value:',ang_pid_value)
-        #print('speed_wo_enc:',self.speed_wo_enc)
-        #print('dt_theta:',dt)
-        #print("theta:",theta)
 
         #encoder synchronisation
-        global enc_r
-        enc_r = arr.data[6]
 
         # encoder synchronization controller
         self.pid_enc.sample_time = dt
@@ -237,7 +248,7 @@ class ControlNode:
             position_lst.append(x)
             enc_l_lst.append(enc_l)
             enc_r_lst.append(enc_r)
-            imu1_lst.append(arr.data[0])
+            imu1_lst.append(imu1)
             imu2_lst.append(theta)
             lin_acc_lst.append(lin_acc)
             lin_vel_lst.append(lin_velocity)
@@ -247,8 +258,8 @@ class ControlNode:
             ref_pos_lst.append(ref_pos)
             ref_vel_lst.append(self.pos_pid_value)
             ref_angle_lst.append(self.vel_pid_value)
-            rpm_l_lst.append(arr.data[2])
-            rpm_r_lst.append(arr.data[3])
+            rpm_l_lst.append(rpm_l)
+            rpm_r_lst.append(rpm_r)
             ang_acc_lst.append(ang_acc)
             lin_acc_cal_lst.append(lin_acc_cal)
             # u_list.append(u)
@@ -257,16 +268,6 @@ class ControlNode:
 
         rospy.Subscriber('/sensor_pub',Float64MultiArray,self.control_callback)
 
-def reset_motors():
-    print('Resetting Motors')
-    try:
-        motors.motor1.setSpeed(0)
-        raiseIfFault()
-        motors.motor2.setSpeed(0)
-        raiseIfFault()
-        # motors.forceStop()
-    except DriverFault as e:
-        print("Driver %s fault!" % e.driver_num)
 
 
 if __name__ == "__main__":
