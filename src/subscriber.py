@@ -35,15 +35,11 @@ K_dpos = rospy.get_param("/position_controller/Kd")
 
 
 
-global collect_data, flag
 collect_data = True
 flag = True
-global ang_vel_pre
 ang_vel_pre = 0
-global lin_vel_pre
 lin_vel_pre = 0
-# global test_speed
-# test_speed = 0
+
 
 global dt_lst,ang_vel_lst,ang_vel_cal_lst, position_lst, enc_l_lst, enc_r_lst, imu1_lst, imu2_lst,lin_acc_cal_lst, lin_acc_lst,ang_acc_lst
 global lin_vel_lst,x1_list,voltage_l_lst, u_list, voltage_r_lst, ref_pos_lst, ref_vel_lst, rpm_l_lst, rpm_r_lst
