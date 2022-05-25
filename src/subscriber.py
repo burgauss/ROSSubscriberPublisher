@@ -57,6 +57,29 @@ def reset_motors():
     except DriverFault as e:
         print("Driver %s fault!" % e.driver_num)
 ###############################################
+###### Global Elements #######################
+    ang_vel_lst = []
+    position_lst =[]
+    enc_l_lst = []
+    enc_r_lst = []
+    imu1_lst =[]
+    thetaImu2_lst = []
+    lin_acc_lst = []
+    lin_vel_lst = []
+    ref_angle_lst = []
+    voltage_l_lst = []
+    voltage_r_lst = []
+    ref_pos_lst = []
+    ref_vel_lst = []
+    rpm_l_lst = []
+    rpm_r_lst = []
+    ang_acc_lst = []
+    lin_acc_cal_lst = []
+    ang_vel_cal_lst = []
+    dt_lst = []
+    u_list = []
+    x1_list = []
+##############################################
 class Exporter:
     def __init__(self):
         self.ang_vel_lst = []
@@ -141,10 +164,9 @@ class ControlNode:
         self.pid_pos.output_limits = (-10,10)
         self.speed_l = 0
         self.speed_r = 0
-        self.exporter = Exporter
 
 
-        # self.flag2AdjustParams = True
+        self.flag2AdjustParams = True
     
     def control_callback(self, arr):
         'The observer is called each time the subscriber receives new information'
@@ -221,49 +243,51 @@ class ControlNode:
             Moreover the data of the PID's is taked due to they are already defined in self
 
         """
-        # self.exportData(ref_pos, enc_l, enc_r, lin_velocity, theta, 
-        #                 ang_vel, lin_acc, x, rpm_l, rpm_r, dt)
-        self.exporter.update(ref_pos, enc_l, enc_r, lin_velocity, theta, 
-                         ang_vel, lin_acc, x, rpm_l, rpm_r, dt)
+        #
+        self.exportData(ref_pos, enc_l, enc_r, lin_velocity, theta, 
+                    ang_vel, lin_acc, x, rpm_l, rpm_r, dt)
+        # self.exporter.update(ref_pos, enc_l, enc_r, lin_velocity, theta, 
+        #                  ang_vel, lin_acc, x, rpm_l, rpm_r, dt)
+
 
     def subscribe(self):
         'Subscribe to the sensor_pub'
         rospy.Subscriber('/sensor_pub',Float64MultiArray, self.control_callback)
 
-    # def exportData(self, ref_pos_, enc_l_, enc_r_, lin_velocity_, theta_, 
-    #                 ang_vel_, lin_acc_,x_, rpm_l_, rpm_r_, dt_):
+    def exportData(self, ref_pos_, enc_l_, enc_r_, lin_velocity_, theta_, 
+                    ang_vel_, lin_acc_,x_, rpm_l_, rpm_r_, dt_):
             
-    #         if self.flag2AdjustParams:
-    #             ang_acc = (ang_vel_ - 0)/dt_
-    #             lin_acc_cal = (lin_velocity_*self.wheelDiameter/2 - 0)/dt_
-    #             ang_vel_cal = (enc_l_ - 0)*2*3.14/(dt_*3200)
-    #             self.flag2AdjustParamsflag = False
-    #         else:
-    #             ang_acc = (ang_vel_ - self.ang_vel_lst[-1])/dt_
-    #             lin_acc_cal = (lin_velocity_*self.wheelDiameter/2 - self.lin_vel_lst[-1])/dt_
-    #             ang_vel_cal = ((enc_l_ - self.enc_l_lst[-1])*2*3.14/3200)/dt_
+            if self.flag2AdjustParams:
+                ang_acc = (ang_vel_ - 0)/dt_
+                lin_acc_cal = (lin_velocity_*self.wheelDiameter/2 - 0)/dt_
+                ang_vel_cal = (enc_l_ - 0)*2*3.14/(dt_*3200)
+                self.flag2AdjustParamsflag = False
+            else:
+                ang_acc = (ang_vel_ - self.ang_vel_lst[-1])/dt_
+                lin_acc_cal = (lin_velocity_*self.wheelDiameter/2 - self.lin_vel_lst[-1])/dt_
+                ang_vel_cal = ((enc_l_ - self.enc_l_lst[-1])*2*3.14/3200)/dt_
             
-    #         self.dt_lst.append(dt_)
-    #         self.ang_vel_lst.append(ang_vel_*4)
-    #         self.ang_vel_cal_lst.append(ang_vel_cal)
-    #         self.position_lst.append(x_)
-    #         self.enc_l_lst.append(enc_l_)
-    #         self.enc_r_lst.append(enc_r_)
-    #         # self.imu1_lst.append(arr.data[0]) #the imu 1 is irrelevant
-    #         self.thetaImu2_lst.append(theta_)
-    #         self.lin_acc_lst.append(lin_acc_)
-    #         self.lin_vel_lst.append(lin_velocity_)
-    #         self.voltage_l_lst.append(self.speed_l*12/480)
-    #         self.voltage_r_lst.append(self.speed_r*12/480)
-    #         # voltage_r_lst.append(test_speed)
-    #         self.ref_pos_lst.append(ref_pos_)
-    #         self.ref_vel_lst.append(self.pos_pid_value)
-    #         self.ref_angle_lst.append(self.vel_pid_value)
-    #         self.rpm_l_lst.append(rpm_l_)
-    #         self.rpm_r_lst.append(rpm_r_)
-    #         self.ang_acc_lst.append(ang_acc)
-    #         self.lin_acc_cal_lst.append(lin_acc_cal)
-    #         # self.u_list.append(u)
+            dt_lst.append(dt_)
+            self.ang_vel_lst.append(ang_vel_*4)
+            self.ang_vel_cal_lst.append(ang_vel_cal)
+            self.position_lst.append(x_)
+            self.enc_l_lst.append(enc_l_)
+            self.enc_r_lst.append(enc_r_)
+            # self.imu1_lst.append(arr.data[0]) #the imu 1 is irrelevant
+            self.thetaImu2_lst.append(theta_)
+            self.lin_acc_lst.append(lin_acc_)
+            self.lin_vel_lst.append(lin_velocity_)
+            self.voltage_l_lst.append(self.speed_l*12/480)
+            self.voltage_r_lst.append(self.speed_r*12/480)
+            # voltage_r_lst.append(test_speed)
+            self.ref_pos_lst.append(ref_pos_)
+            self.ref_vel_lst.append(self.pos_pid_value)
+            self.ref_angle_lst.append(self.vel_pid_value)
+            self.rpm_l_lst.append(rpm_l_)
+            self.rpm_r_lst.append(rpm_r_)
+            self.ang_acc_lst.append(ang_acc)
+            self.lin_acc_cal_lst.append(lin_acc_cal)
+            # self.u_list.append(u)
     
 
 
