@@ -176,6 +176,8 @@ class ControlNode:
             else:
                 self.speed_r = self.speed_r
 
+
+
         try:
             motors.motor1.setSpeed(self.speed_r)
             # motors.motor1.setSpeed(100)
@@ -232,7 +234,7 @@ class ControlNode:
             rpm_r_lst.append(arr.data[3])
             ang_acc_lst.append(ang_acc)
             lin_acc_cal_lst.append(lin_acc_cal)
-            u_list.append(u)
+            # u_list.append(u)
 
     def subscribe(self):
 
