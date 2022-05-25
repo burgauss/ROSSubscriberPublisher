@@ -32,8 +32,7 @@ K_ipos = rospy.get_param("/position_controller/Ki")
 K_dpos = rospy.get_param("/position_controller/Kd")
 
 
-collect_data = False
-flag = True
+collect_data = True
 ang_vel_pre = 0
 lin_vel_pre = 0
 
@@ -113,7 +112,7 @@ def reset_motors():
 class ControlNode:
     def __init__(self):
         rospy.init_node('controller',anonymous=True)
-        exporterClass = Exporter()
+        self.exporterClass = Exporter()
         self.diameter = 0.116
         self.t_pre = 0
         self.r = rospy.Rate(0.05)
@@ -127,6 +126,7 @@ class ControlNode:
         self.pid_enc = PID(Kpe,Kie,Kde,setpoint = 0)
         self.pid_pos = PID(K_ppos,K_ipos,K_dpos,setpoint = 0)
         self.pid_pos.output_limits = (-10,10)
+        self.flag = True
 
 
 
@@ -136,7 +136,7 @@ class ControlNode:
         imu1 = arr.data[0]
         theta = arr.data[1]
         rpm_l = arr.data[2]
-        rpm_r = arr.dara[3]
+        rpm_r = arr.data[3]
         lin_velocity = arr.data[4]
         enc_l = arr.data[5]
         enc_r = arr.data[6]
@@ -230,39 +230,37 @@ class ControlNode:
 
 
         if collect_data:
-            global flag
-            if flag:
+            if self.flag:
                 ang_acc = (ang_vel - 0)/dt
                 lin_acc_cal = (lin_velocity*self.diameter/2 - 0)/dt
                 ang_vel_cal = (enc_l - 0)*2*3.14/(dt*3200)
                 flag = False
             else:
-                ang_acc = (ang_vel - ang_vel_lst[-1])/dt
-                lin_acc_cal = (lin_velocity*self.diameter/2 - lin_vel_lst[-1])/dt
-                ang_vel_cal = ((enc_l - enc_l_lst[-1])*2*3.14/3200)/dt
-            # lin_vel_pre = lin_velocity*diameter/2
-            # ang_vel_pre = ang_vel
-            dt_lst.append(dt)
-            ang_vel_lst.append(ang_vel*4)
-            ang_vel_cal_lst.append(ang_vel_cal)
-            position_lst.append(x)
-            enc_l_lst.append(enc_l)
-            enc_r_lst.append(enc_r)
-            imu1_lst.append(imu1)
-            imu2_lst.append(theta)
-            lin_acc_lst.append(lin_acc)
-            lin_vel_lst.append(lin_velocity)
-            voltage_l_lst.append(self.speed_l*12/480)
-            voltage_r_lst.append(self.speed_r*12/480)
-            # voltage_r_lst.append(test_speed)
-            ref_pos_lst.append(ref_pos)
-            ref_vel_lst.append(self.pos_pid_value)
-            ref_angle_lst.append(self.vel_pid_value)
-            rpm_l_lst.append(rpm_l)
-            rpm_r_lst.append(rpm_r)
-            ang_acc_lst.append(ang_acc)
-            lin_acc_cal_lst.append(lin_acc_cal)
-            # u_list.append(u)
+                ang_acc = (ang_vel - self.exporterClass.ang_vel_lst[-1])/dt
+                lin_acc_cal = (lin_velocity*self.diameter/2 - self.exporterClass.lin_vel_lst[-1])/dt
+                ang_vel_cal = ((enc_l - self.exporterClass.enc_l_lst[-1])*2*3.14/3200)/dt
+
+            self.exporterClass.dt_lst.append(dt)
+            self.exporterClass.ang_vel_lst.append(ang_vel*4)
+            # ang_vel_cal_lst.append(ang_vel_cal)
+            # position_lst.append(x)
+            self.exporterClass.enc_l_lst.append(enc_l)
+            # enc_r_lst.append(enc_r)
+            # imu1_lst.append(imu1)
+            # imu2_lst.append(theta)
+            # lin_acc_lst.append(lin_acc)
+            self.exporterClass.lin_vel_lst.append(lin_velocity)
+            # voltage_l_lst.append(self.speed_l*12/480)
+            # voltage_r_lst.append(self.speed_r*12/480)
+            # # voltage_r_lst.append(test_speed)
+            # ref_pos_lst.append(ref_pos)
+            # ref_vel_lst.append(self.pos_pid_value)
+            # ref_angle_lst.append(self.vel_pid_value)
+            # rpm_l_lst.append(rpm_l)
+            # rpm_r_lst.append(rpm_r)
+            # ang_acc_lst.append(ang_acc)
+            # lin_acc_cal_lst.append(lin_acc_cal)
+            # # u_list.append(u)
 
     def subscribe(self):
 
@@ -289,13 +287,13 @@ if __name__ == "__main__":
         #         test_speed = 480
         #     i = 0
 
-    if collect_data:
-        df = pd.DataFrame(list(zip(lin_acc_cal_lst,ang_acc_lst,ang_vel_lst,position_lst,enc_l_lst,enc_r_lst,imu1_lst,imu2_lst,
-                                   lin_acc_lst,lin_vel_lst,voltage_l_lst,voltage_r_lst,ref_pos_lst,
-                                   ref_vel_lst,ref_angle_lst,rpm_l_lst,rpm_r_lst,ang_vel_cal_lst,dt_lst,u_list)),
-                          columns =['lin_acc_cal','ang_acc','ang_vel','position','enc_l','enc_r','imu1','imu2','lin_acc',
-                                    'lin_vel','voltage_l','voltage_r','ref_pos','ref_vel','ref_angle',
-                                    'rpm_l','rpm_r','ang_vel_cal','dt','u'])
-        df.to_csv('/home/pi/Data/weight_plate_low_'+nowWithFormat+'.csv', index=False)
+    # if collect_data:
+    #     df = pd.DataFrame(list(zip(lin_acc_cal_lst,ang_acc_lst,ang_vel_lst,position_lst,enc_l_lst,enc_r_lst,imu1_lst,imu2_lst,
+    #                                lin_acc_lst,lin_vel_lst,voltage_l_lst,voltage_r_lst,ref_pos_lst,
+    #                                ref_vel_lst,ref_angle_lst,rpm_l_lst,rpm_r_lst,ang_vel_cal_lst,dt_lst,u_list)),
+    #                       columns =['lin_acc_cal','ang_acc','ang_vel','position','enc_l','enc_r','imu1','imu2','lin_acc',
+    #                                 'lin_vel','voltage_l','voltage_r','ref_pos','ref_vel','ref_angle',
+    #                                 'rpm_l','rpm_r','ang_vel_cal','dt','u'])
+    #     df.to_csv('/home/pi/Data/weight_plate_low_'+nowWithFormat+'.csv', index=False)
 
     rospy.on_shutdown(reset_motors())
