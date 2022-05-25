@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from re import S
 import rospy
 import serial
 import numpy as np
@@ -32,9 +33,7 @@ K_dpos = rospy.get_param("/position_controller/Kd")
 
 
 
-diameter = 0.116
-# ref_pos = 0
-t_pre = 0
+
 
 global collect_data, flag
 collect_data = True
@@ -83,6 +82,8 @@ def raiseIfFault():
 class ControlNode:
     def __init__(self):
         rospy.init_node('controller',anonymous=True)
+        self.diameter = 0.116
+        self.t_pre = 0
         self.r = rospy.Rate(0.05)
         self.vel_publisher = rospy.Publisher('motor_speed',Float64MultiArray,queue_size=10)
         # self.vel_publisher_r = rospy.Publisher('motor_speed_r',Float64,queue_size=10)
