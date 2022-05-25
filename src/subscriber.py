@@ -32,38 +32,58 @@ K_ipos = rospy.get_param("/position_controller/Ki")
 K_dpos = rospy.get_param("/position_controller/Kd")
 
 
-
-
-
 collect_data = True
 flag = True
 ang_vel_pre = 0
 lin_vel_pre = 0
 
+class Exporter:
+    def __init__(self):
+        self.ang_vel_lst = []
+        self.position_lst =[]
+        self.enc_l_lst = []
+        self.enc_r_lst = []
+        self.imu1_lst =[]
+        self.imu2_lst =[]
+        self.lin_acc_lst = []
+        self.lin_vel_lst = []
+        self.ref_angle_lst = []
+        self.voltage_l_lst = []
+        self.voltage_r_lst = []
+        self.ref_pos_lst = []
+        self.ref_vel_lst = []
+        self.rpm_l_lst = []
+        self.rpm_r_lst = []
+        self.ang_acc_lst = []
+        self.lin_acc_cal_lst = []
+        self.ang_vel_cal_lst = []
+        self.dt_lst = []
+        self.u_list = []
+        self.x1_list = []
 
-global dt_lst,ang_vel_lst,ang_vel_cal_lst, position_lst, enc_l_lst, enc_r_lst, imu1_lst, imu2_lst,lin_acc_cal_lst, lin_acc_lst,ang_acc_lst
-global lin_vel_lst,x1_list,voltage_l_lst, u_list, voltage_r_lst, ref_pos_lst, ref_vel_lst, rpm_l_lst, rpm_r_lst
-ang_vel_lst = []
-position_lst =[]
-enc_l_lst = []
-enc_r_lst = []
-imu1_lst =[]
-imu2_lst =[]
-lin_acc_lst = []
-lin_vel_lst = []
-ref_angle_lst = []
-voltage_l_lst = []
-voltage_r_lst = []
-ref_pos_lst = []
-ref_vel_lst = []
-rpm_l_lst = []
-rpm_r_lst = []
-ang_acc_lst = []
-lin_acc_cal_lst = []
-ang_vel_cal_lst = []
-dt_lst = []
-u_list = []
-x1_list = []
+# global dt_lst,ang_vel_lst,ang_vel_cal_lst, position_lst, enc_l_lst, enc_r_lst, imu1_lst, imu2_lst,lin_acc_cal_lst, lin_acc_lst,ang_acc_lst
+# global lin_vel_lst,x1_list,voltage_l_lst, u_list, voltage_r_lst, ref_pos_lst, ref_vel_lst, rpm_l_lst, rpm_r_lst
+# ang_vel_lst = []
+# position_lst =[]
+# enc_l_lst = []
+# enc_r_lst = []
+# imu1_lst =[]
+# imu2_lst =[]
+# lin_acc_lst = []
+# lin_vel_lst = []
+# ref_angle_lst = []
+# voltage_l_lst = []
+# voltage_r_lst = []
+# ref_pos_lst = []
+# ref_vel_lst = []
+# rpm_l_lst = []
+# rpm_r_lst = []
+# ang_acc_lst = []
+# lin_acc_cal_lst = []
+# ang_vel_cal_lst = []
+# dt_lst = []
+# u_list = []
+# x1_list = []
 
 class DriverFault(Exception):
     def __init__(self, driver_num):
@@ -78,6 +98,7 @@ def raiseIfFault():
 class ControlNode:
     def __init__(self):
         rospy.init_node('controller',anonymous=True)
+        exporterClass = Exporter()
         self.diameter = 0.116
         self.t_pre = 0
         self.r = rospy.Rate(0.05)
@@ -91,6 +112,8 @@ class ControlNode:
         self.pid_enc = PID(Kpe,Kie,Kde,setpoint = 0)
         self.pid_pos = PID(K_ppos,K_ipos,K_dpos,setpoint = 0)
         self.pid_pos.output_limits = (-10,10)
+
+
 
     def control_callback(self, arr):
         
