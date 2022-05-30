@@ -58,6 +58,51 @@ class Exporter:
         self.ang_acc_lst = []
         self.lin_acc_cal_lst = []
         # self.x1_list = []
+    
+    def collectData(self):
+        now = datetime.now()
+        nowWithFormat = now.strftime("%m%d%y%H%M")
+
+        df = pd.DataFrame(list(zip( self.dt_lst,
+                                    self.ang_vel_lst,
+                                    self.ang_vel_cal_lst,
+                                    self.position_lst,
+                                    self.enc_l_lst,
+                                    self.enc_r_lst,
+                                    self.imu1_lst,
+                                    self.imu2_lst,
+                                    self.lin_acc_lst,
+                                    self.lin_vel_lst,
+                                    self.voltage_l_lst,
+                                    self.voltage_r_lst,
+                                    self.ref_vel_lst,
+                                    self.ref_angle_lst,
+                                    self.ref_pos_lst,
+                                    self.rpm_l_lst,
+                                    self.rpm_r_lst,
+                                    self.ang_acc_lst,
+                                    self.lin_acc_cal_lst)),
+                        columns =[  'dt',
+                                    'ang_vel',
+                                    'ang_vel_cal',
+                                    'position',
+                                    'enc_l',
+                                    'enc_r',
+                                    'imu1',
+                                    'imu2',
+                                    'lin_acc',
+                                    'lin_vel',
+                                    'voltage_l',
+                                    'voltage_r',
+                                    'ref_vel',
+                                    'ref_angle',
+                                    'ref_pos',
+                                    'rpm_l',
+                                    'rpm_r',
+                                    'ang_acc',
+                                    'lin_acc_cal'])
+                                    
+        df.to_csv('/home/pi/Data/weight_plate_low_'+nowWithFormat+'.csv', index=False)
 
 # global dt_lst,ang_vel_lst,ang_vel_cal_lst, position_lst, enc_l_lst, enc_r_lst, imu1_lst, imu2_lst,lin_acc_cal_lst, lin_acc_lst,ang_acc_lst
 # global lin_vel_lst,x1_list,voltage_l_lst, u_list, voltage_r_lst, ref_pos_lst, ref_vel_lst, rpm_l_lst, rpm_r_lst
@@ -283,7 +328,8 @@ if __name__ == "__main__":
         #     if test_speed >= 480:
         #         test_speed = 480
         #     i = 0
-    print(sub.exporterClass.enc_l_lst)
+    # print(sub.exporterClass.enc_l_lst)
+    sub.exporterClass.collectData()
     # if collect_data:
     #     df = pd.DataFrame(list(zip(lin_acc_cal_lst,ang_acc_lst,ang_vel_lst,position_lst,enc_l_lst,enc_r_lst,imu1_lst,imu2_lst,
     #                                lin_acc_lst,lin_vel_lst,voltage_l_lst,voltage_r_lst,ref_pos_lst,
