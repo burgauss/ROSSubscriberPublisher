@@ -199,23 +199,29 @@ class ControlNode:
         #     out = self.ang_pid_value + 5
         # else:
         #     out = self.ang_pid_value - 5
-        if self.ang_pid_value > 0:
-            self.ang_pid_value = self.ang_pid_value + 5
-        else:
-            self.ang_pid_value = self.ang_pid_value - 5
+        # if self.ang_pid_value > 0:
+        #     self.ang_pid_value = self.ang_pid_value + 5
+        # else:
+        #     self.ang_pid_value = self.ang_pid_value - 5
 
 
         #encoder synchronisation
 
         # encoder synchronization controller
+        # self.pid_enc.sample_time = dt
+        # self.pid_enc.setpoint = enc_l
+        # self.enc_pid_value = self.pid_enc(enc_r)
+
         self.pid_enc.sample_time = dt
         self.pid_enc.setpoint = enc_l
-        self.enc_pid_value = self.pid_enc(enc_r)
+        self.enc_pid_value = self.pid_enc(-enc_r)
 
         # self.speed_l = self.speed_wo_enc
         # self.speed_r = self.speed_wo_enc + self.enc_pid_value
         self.speed_l = self.ang_pid_value
-        self.speed_r = self.ang_pid_value + self.enc_pid_value
+        # self.speed_r = self.ang_pid_value + self.enc_pid_value
+        self.speed_r = -self.ang_pid_value + self.enc_pid_value
+        
         
 
 
