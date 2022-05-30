@@ -301,7 +301,7 @@ if __name__ == "__main__":
         #         test_speed = 480
         #     i = 0
     # print(sub.exporterClass.enc_l_lst)
-    sub.exporterClass.collectData()
+    #sub.exporterClass.collectData()
 
 
     rospy.on_shutdown(reset_motors())
