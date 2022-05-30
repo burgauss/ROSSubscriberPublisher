@@ -139,6 +139,7 @@ class ControlNode:
         self.t_pre = 0
         self.r = rospy.Rate(0.05)
         self.vel_publisher = rospy.Publisher('motor_speed',Float64MultiArray,queue_size=10)
+        self.imu2 = rospy.Publisher('imu2',Float64,queue_size=10)
         # self.vel_publisher_r = rospy.Publisher('motor_speed_r',Float64,queue_size=10)
         self.pos_publisher = rospy.Publisher('position',Float64,queue_size=10)
         self.ref_angle_publisher = rospy.Publisher('ref_angle',Float64,queue_size=10)
@@ -232,14 +233,15 @@ class ControlNode:
                 print("Driver %s fault!" % e.driver_num)
 
 
-        speed_data = Float64MultiArray()
+        # speed_data = Float64MultiArray()
 
-        speed_data.data = [self.speed_l,self.speed_r]
-
-        self.vel_publisher.publish(speed_data)
-        self.pos_publisher.publish(x)
-        self.ref_angle_publisher.publish(self.vel_pid_value)
-        self.ref_vel_publisher.publish(self.pos_pid_value)
+        # speed_data.data = [self.speed_l,self.speed_r]
+        self.imu2.publish(theta)
+        # self.vel_publisher.publish(speed_data)
+        # self.pos_publisher.publish(x)
+        # self.ref_angle_publisher.publish(self.vel_pid_value)
+        # self.ref_vel_publisher.publish(self.pos_pid_value)
+        
 
 
         # Ensure collection of data using the exporterClass instance
