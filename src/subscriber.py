@@ -286,7 +286,7 @@ if __name__ == "__main__":
         #     if test_speed >= 480:
         #         test_speed = 480
         #     i = 0
-
+    print(sub.exporterClass.enc_l_lst)
     # if collect_data:
     #     df = pd.DataFrame(list(zip(lin_acc_cal_lst,ang_acc_lst,ang_vel_lst,position_lst,enc_l_lst,enc_r_lst,imu1_lst,imu2_lst,
     #                                lin_acc_lst,lin_vel_lst,voltage_l_lst,voltage_r_lst,ref_pos_lst,
