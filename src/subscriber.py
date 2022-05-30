@@ -195,18 +195,14 @@ class ControlNode:
         self.ang_pid_value = self.pid_ang(theta)
 
         # addition of 5 for compensating motor inertia at start
+        # if self.ang_pid_value > 0:
+        #     out = self.ang_pid_value + 5
+        # else:
+        #     out = self.ang_pid_value - 5
         if self.ang_pid_value > 0:
-            out = self.ang_pid_value + 5
+            self.ang_pid_value = self.ang_pid_value + 5
         else:
-            out = self.ang_pid_value - 5
-
-        if out >= 480:
-            self.speed_wo_enc = 480
-        else:
-            if out <= -480:
-                self.speed_wo_enc = -480
-            else:
-                self.speed_wo_enc = out
+            self.ang_pid_value = self.ang_pid_value - 5
 
 
         #encoder synchronisation
@@ -216,15 +212,12 @@ class ControlNode:
         self.pid_enc.setpoint = enc_l
         self.enc_pid_value = self.pid_enc(enc_r)
 
-        self.speed_l = self.speed_wo_enc
-        self.speed_r = self.speed_wo_enc + self.enc_pid_value
-        if self.speed_r >= 480:
-            self.speed_r = 480
-        else:
-            if self.speed_r <= -480:
-                self.speed_r = -480
-            else:
-                self.speed_r = self.speed_r
+        # self.speed_l = self.speed_wo_enc
+        # self.speed_r = self.speed_wo_enc + self.enc_pid_value
+        self.speed_l = self.ang_pid_value
+        self.speed_r = self.ang_pid_value + self.enc_pid_value
+        
+
 
 
 
