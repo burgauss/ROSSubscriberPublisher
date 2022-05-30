@@ -38,7 +38,9 @@ lin_vel_pre = 0
 
 class Exporter:
     def __init__(self):
+        self.dt_lst = []
         self.ang_vel_lst = []
+        self.ang_vel_cal_lst = []
         self.position_lst =[]
         self.enc_l_lst = []
         self.enc_r_lst = []
@@ -46,19 +48,16 @@ class Exporter:
         self.imu2_lst =[]
         self.lin_acc_lst = []
         self.lin_vel_lst = []
-        self.ref_angle_lst = []
         self.voltage_l_lst = []
         self.voltage_r_lst = []
-        self.ref_pos_lst = []
         self.ref_vel_lst = []
+        self.ref_angle_lst = []
+        self.ref_pos_lst = []
         self.rpm_l_lst = []
         self.rpm_r_lst = []
         self.ang_acc_lst = []
         self.lin_acc_cal_lst = []
-        self.ang_vel_cal_lst = []
-        self.dt_lst = []
-        self.u_list = []
-        self.x1_list = []
+        # self.x1_list = []
 
 # global dt_lst,ang_vel_lst,ang_vel_cal_lst, position_lst, enc_l_lst, enc_r_lst, imu1_lst, imu2_lst,lin_acc_cal_lst, lin_acc_lst,ang_acc_lst
 # global lin_vel_lst,x1_list,voltage_l_lst, u_list, voltage_r_lst, ref_pos_lst, ref_vel_lst, rpm_l_lst, rpm_r_lst
@@ -228,7 +227,7 @@ class ControlNode:
         self.ref_vel_publisher.publish(self.pos_pid_value)
 
 
-
+        # Ensure collection of data using the exporterClass instance
         if collect_data:
             if self.flag:
                 ang_acc = (ang_vel - 0)/dt
@@ -242,25 +241,23 @@ class ControlNode:
 
             self.exporterClass.dt_lst.append(dt)
             self.exporterClass.ang_vel_lst.append(ang_vel*4)
-            # ang_vel_cal_lst.append(ang_vel_cal)
-            # position_lst.append(x)
+            self.exporterClass.ang_vel_cal_lst.append(ang_vel_cal)
+            self.exporterClass.position_lst.append(x)
             self.exporterClass.enc_l_lst.append(enc_l)
-            # enc_r_lst.append(enc_r)
-            # imu1_lst.append(imu1)
-            # imu2_lst.append(theta)
-            # lin_acc_lst.append(lin_acc)
+            self.exporterClass.enc_r_lst.append(enc_r)
+            self.exporterClass.imu1_lst.append(imu1)
+            self.exporterClass.imu2_lst.append(theta)
+            self.exporterClass.lin_acc_lst.append(lin_acc)
             self.exporterClass.lin_vel_lst.append(lin_velocity)
-            # voltage_l_lst.append(self.speed_l*12/480)
-            # voltage_r_lst.append(self.speed_r*12/480)
-            # # voltage_r_lst.append(test_speed)
-            # ref_pos_lst.append(ref_pos)
-            # ref_vel_lst.append(self.pos_pid_value)
-            # ref_angle_lst.append(self.vel_pid_value)
-            # rpm_l_lst.append(rpm_l)
-            # rpm_r_lst.append(rpm_r)
-            # ang_acc_lst.append(ang_acc)
-            # lin_acc_cal_lst.append(lin_acc_cal)
-            # # u_list.append(u)
+            self.exporterClass.voltage_l_lst.append(self.speed_l*12/480)
+            self.exporterClass.voltage_r_lst.append(self.speed_r*12/480)
+            self.exporterClass.ref_vel_lst.append(self.pos_pid_value)
+            self.exporterClass.ref_pos_lst.append(ref_pos)
+            self.exporterClass.ref_angle_lst.append(self.vel_pid_value)
+            self.exporterClass.rpm_l_lst.append(rpm_l)
+            self.exporterClass.rpm_r_lst.append(rpm_r)
+            self.exporterClass.ang_acc_lst.append(ang_acc)
+            self.exporterClass.lin_acc_cal_lst.append(lin_acc_cal)
 
     def subscribe(self):
 
