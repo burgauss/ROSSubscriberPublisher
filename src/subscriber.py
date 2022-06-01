@@ -200,10 +200,10 @@ class ControlNode:
         #     out = self.ang_pid_value + 5
         # else:
         #     out = self.ang_pid_value - 5
-        # if self.ang_pid_value > 0:
-        #     self.ang_pid_value = self.ang_pid_value + 5
-        # else:
-        #     self.ang_pid_value = self.ang_pid_value - 5
+        if self.ang_pid_value > 0:
+            self.ang_pid_value = self.ang_pid_value + 5
+        else:
+            self.ang_pid_value = self.ang_pid_value - 5
 
 
         #encoder synchronisation
@@ -242,15 +242,14 @@ class ControlNode:
         except DriverFault as e:
                 print("Driver %s fault!" % e.driver_num)
 
-
-        # speed_data = Float64MultiArray()
-
-        # speed_data.data = [self.speed_l,self.speed_r]
+        #Publishing some data to visualize in ROS
+        speed_data = Float64MultiArray()
+        speed_data.data = [self.speed_l,self.speed_r]
         self.imu2.publish(theta)
-        # self.vel_publisher.publish(speed_data)
-        # self.pos_publisher.publish(x)
-        # self.ref_angle_publisher.publish(self.vel_pid_value)
-        # self.ref_vel_publisher.publish(self.pos_pid_value)
+        self.vel_publisher.publish(speed_data)
+        self.pos_publisher.publish(x)
+        self.ref_angle_publisher.publish(self.vel_pid_value)
+        self.ref_vel_publisher.publish(self.pos_pid_value)
         
 
 
