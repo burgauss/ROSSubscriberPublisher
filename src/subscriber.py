@@ -207,14 +207,24 @@ class ControlNode:
 
 
         #encoder synchronisation
-
+        #Limiting of the value self.ang_pid_value
+        if self.ang_pid_value >= 480:
+            self.ang_pid_value = 480
+        elif self.ang_pid_value <= -480:
+            self.ang_pid_value = -480
 
         self.pid_enc.sample_time = dt
         self.pid_enc.setpoint = enc_l
         self.enc_pid_value = self.pid_enc(enc_r)
 
+        speed_rightWheel = -self.ang_pid_value + self.enc_pid_value # The calculation
+        if speed_rightWheel >= 480:
+            speed_rightWheel = 480
+        elif speed_rightWheel <= -480:
+            speed_rightWheel = -480
+
         self.speed_l = self.ang_pid_value
-        self.speed_r = -self.ang_pid_value + self.enc_pid_value
+        self.speed_r = speed_rightWheel
         
         
 
@@ -301,7 +311,7 @@ if __name__ == "__main__":
         #         test_speed = 480
         #     i = 0
     # print(sub.exporterClass.enc_l_lst)
-    #sub.exporterClass.collectData()
+    sub.exporterClass.collectData()
 
 
     rospy.on_shutdown(reset_motors())
