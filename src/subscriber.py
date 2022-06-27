@@ -172,19 +172,19 @@ class ControlNode:
         t = time.time()
         dt = t - self.t_pre
         self.t_pre = t
-        x = np.pi*self.diameter*enc_l/3200
+        #x = np.pi*self.diameter*enc_l/3200
 
 
 
-        self.pid_pos.sample_time = dt
-        self.pid_pos.setpoint = ref_pos
-        self.pos_pid_value = self.pid_pos(x)
+        # self.pid_pos.sample_time = dt
+        # self.pid_pos.setpoint = ref_pos
+        # self.pos_pid_value = self.pid_pos(x)
 
         #velocity controller
 
-        self.pid_vel.sample_time = dt
-        self.pid_vel.setpoint = self.pos_pid_value
-        self.vel_pid_value = self.pid_vel(lin_velocity)
+        # self.pid_vel.sample_time = dt
+        # self.pid_vel.setpoint = self.pos_pid_value
+        # self.vel_pid_value = self.pid_vel(lin_velocity)
 
 
 
@@ -192,7 +192,8 @@ class ControlNode:
         #angle_controller
 
         self.pid_ang.sample_time = dt
-        self.pid_ang.setpoint = -self.vel_pid_value
+        # self.pid_ang.setpoint = -self.vel_pid_value
+        self.pid_ang.setpoint = 0
         self.ang_pid_value = self.pid_ang(theta)
 
         # addition of 5 for compensating motor inertia at start
@@ -200,10 +201,10 @@ class ControlNode:
         #     out = self.ang_pid_value + 5
         # else:
         #     out = self.ang_pid_value - 5
-        # if self.ang_pid_value > 0:
-        #     self.ang_pid_value = self.ang_pid_value + 5
-        # else:
-        #     self.ang_pid_value = self.ang_pid_value - 5
+        if self.ang_pid_value > 0:
+            self.ang_pid_value = self.ang_pid_value + 5
+        else:
+            self.ang_pid_value = self.ang_pid_value - 5
 
 
         #encoder synchronisation
@@ -242,7 +243,6 @@ class ControlNode:
         except DriverFault as e:
                 print("Driver %s fault!" % e.driver_num)
 
-
         speed_data = Float64MultiArray()
         speed_data.data = [self.speed_l,self.speed_r]
         self.imu2.publish(theta)
@@ -268,7 +268,7 @@ class ControlNode:
             self.exporterClass.dt_lst.append(dt)
             self.exporterClass.ang_vel_lst.append(ang_vel*4)
             self.exporterClass.ang_vel_cal_lst.append(ang_vel_cal)
-            self.exporterClass.position_lst.append(x)
+            # self.exporterClass.position_lst.append(x)
             self.exporterClass.enc_l_lst.append(enc_l)
             self.exporterClass.enc_r_lst.append(enc_r)
             self.exporterClass.imu1_lst.append(imu1)
@@ -277,9 +277,9 @@ class ControlNode:
             self.exporterClass.lin_vel_lst.append(lin_velocity)
             self.exporterClass.voltage_l_lst.append(self.speed_l*12/480)
             self.exporterClass.voltage_r_lst.append(self.speed_r*12/480)
-            self.exporterClass.ref_vel_lst.append(self.pos_pid_value)
+            # self.exporterClass.ref_vel_lst.append(self.pos_pid_value)
             self.exporterClass.ref_pos_lst.append(ref_pos)
-            self.exporterClass.ref_angle_lst.append(self.vel_pid_value)
+            # self.exporterClass.ref_angle_lst.append(self.vel_pid_value)
             self.exporterClass.rpm_l_lst.append(rpm_l)
             self.exporterClass.rpm_r_lst.append(rpm_r)
             self.exporterClass.ang_acc_lst.append(ang_acc)
