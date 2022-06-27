@@ -172,19 +172,19 @@ class ControlNode:
         t = time.time()
         dt = t - self.t_pre
         self.t_pre = t
-        #x = np.pi*self.diameter*enc_l/3200
+        x = np.pi*self.diameter*enc_l/3200
 
 
 
-        # self.pid_pos.sample_time = dt
-        # self.pid_pos.setpoint = ref_pos
-        # self.pos_pid_value = self.pid_pos(x)
+        self.pid_pos.sample_time = dt
+        self.pid_pos.setpoint = ref_pos
+        self.pos_pid_value = self.pid_pos(x)
 
-        #velocity controller
+        # velocity controller
 
-        # self.pid_vel.sample_time = dt
-        # self.pid_vel.setpoint = self.pos_pid_value
-        # self.vel_pid_value = self.pid_vel(lin_velocity)
+        self.pid_vel.sample_time = dt
+        self.pid_vel.setpoint = self.pos_pid_value
+        self.vel_pid_value = self.pid_vel(lin_velocity)
 
 
 
@@ -192,7 +192,6 @@ class ControlNode:
         #angle_controller
 
         self.pid_ang.sample_time = dt
-        # self.pid_ang.setpoint = -self.vel_pid_value
         self.pid_ang.setpoint = 0
         self.ang_pid_value = self.pid_ang(theta)
 
@@ -201,10 +200,10 @@ class ControlNode:
         #     out = self.ang_pid_value + 5
         # else:
         #     out = self.ang_pid_value - 5
-        if self.ang_pid_value > 0:
-            self.ang_pid_value = self.ang_pid_value + 5
-        else:
-            self.ang_pid_value = self.ang_pid_value - 5
+        # if self.ang_pid_value > 0:
+        #     self.ang_pid_value = self.ang_pid_value + 5
+        # else:
+        #     self.ang_pid_value = self.ang_pid_value - 5
 
 
         #encoder synchronisation
@@ -244,6 +243,8 @@ class ControlNode:
                 print("Driver %s fault!" % e.driver_num)
 
         speed_data = Float64MultiArray()
+       
+       
         speed_data.data = [self.speed_l,self.speed_r]
         self.imu2.publish(theta)
         self.vel_publisher.publish(speed_data)
