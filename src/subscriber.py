@@ -295,7 +295,6 @@ if __name__ == "__main__":
         #     test_speed = test_speed + 1
         #     if test_speed >= 480:
         #         test_speed = 480
-        #     i = 0
 
     if collect_data:
         df = pd.DataFrame(list(zip(lin_acc_cal_lst,ang_acc_lst,ang_vel_lst,position_lst,enc_l_lst,enc_r_lst,imu1_lst,imu2_lst,
