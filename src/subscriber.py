@@ -301,20 +301,8 @@ if __name__ == "__main__":
     while not rospy.is_shutdown():
         sub.subscribe()
         sub.r.sleep()
-        # print('Test Speed:',test_speed)
-        # rospy.loginfo(test_speed)
-        # if i<5:
-        #     i = i +1
-        # else:
-        #     test_speed = test_speed + 1
-        #     if test_speed >= 480:
-        #         test_speed = 480
-<<<<<<< HEAD
-=======
-        #     i = 0
-    # print(sub.exporterClass.enc_l_lst)
+
     sub.exporterClass.collectData()
->>>>>>> 8aea9f97428a8946b602413073dcc0c8b40e7393
 
 
     #rospy.on_shutdown(reset_motors())
