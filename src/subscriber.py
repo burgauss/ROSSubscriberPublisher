@@ -293,7 +293,6 @@ class ControlNode:
 
 
 if __name__ == "__main__":
-    i = 0
     sub = ControlNode()
     now = datetime.now()
     nowWithFormat = now.strftime("%m%d%y%H%M")
