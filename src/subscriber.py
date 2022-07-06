@@ -294,8 +294,6 @@ class ControlNode:
 
 if __name__ == "__main__":
     sub = ControlNode()
-    now = datetime.now()
-    nowWithFormat = now.strftime("%m%d%y%H%M")
     print('Publishing....')
     while not rospy.is_shutdown():
         sub.subscribe()
