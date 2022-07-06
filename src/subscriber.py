@@ -301,6 +301,4 @@ if __name__ == "__main__":
 
     sub.exporterClass.collectData()
 
-
-    #rospy.on_shutdown(reset_motors())
     motors.forceStop()
